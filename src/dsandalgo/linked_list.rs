@@ -1,5 +1,6 @@
+use std::borrow::{Borrow, BorrowMut};
 use std::rc::{Rc, Weak};
-use std::cell::RefCell;
+use std::cell::{RefCell, Ref, RefMut, UnsafeCell};
 
 type LinkToNode<T> = Rc<RefCell<LinkedNode<T>>>;
 
@@ -10,7 +11,7 @@ fn newLinkToNode<T>(value: T) -> LinkToNode<T>{
 
 struct LinkedNode<T>{
     pub value: T,
-    next: Option<LinkToNode<T>>
+    pub next: Option<LinkToNode<T>>
 }
 
 impl<T> LinkedNode<T>{
@@ -59,7 +60,7 @@ impl<T> LinkedList<T>{
             Some(value)=> value,
             None => panic!(
                 "lenght greater or equal than one and tail ponting to None"
-            )
+            ) // TODO - trt to create a error for this
         };
         tail.borrow_mut().next = Some(Rc::clone(&new_node));
         self.tail = Some(Rc::clone(&new_node));
@@ -79,7 +80,7 @@ impl<T> LinkedList<T>{
                         self.count = 0;
                         self.tail.take();
                     }
-                };
+                }; // TODO - try to create an error for this
                 Ok(Rc::try_unwrap(pointer).ok().unwrap().into_inner().value)
             }
             None => Err(LinkedListError::EmptyList)
@@ -111,17 +112,23 @@ impl<T> LinkedList<T>{
                     self.start.take().unwrap()
                 ).ok().unwrap().into_inner().value);
         };
-        let pointer: Weak<RefCell<LinkedNode<T>>>;
-
-        if let Some(value) = &self.start {
-            pointer = Rc::downgrade(value);
+        // TODO - try to do this without use a rc pointer for iterate
+        let mut pointer = self.start.take().unwrap();
+        self.start = Some(Rc::clone(&pointer));
+        for _ in 1..self.count {
+            pointer = match (*pointer).borrow().next {
+                Some(value) =>{
+                    value
+                }
+                None=>{
+                    break;
+                }
+            };
         }
+        let result = (*pointer).borrow().next.take().unwrap();
+        self.tail = Some(pointer);
 
-        while let Weak{RefCell{LinkedNode{next: None, ..}}} = pointer{
-
-        }
-
-        unimplemented!();
+        Ok(Rc::try_unwrap(result).ok().unwrap().into_inner().value)
     }
 }
 
