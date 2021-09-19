@@ -100,7 +100,7 @@ impl<T> LinkedList<T>{
             }
         }
     }
-    pub fn popLast(& mut self) -> Result<T, LinkedListError>{
+    pub fn pop_last(& mut self) -> Result<T, LinkedListError>{
         if self.count == 0{
             return Err(LinkedListError::EmptyList);
         }
