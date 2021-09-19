@@ -86,7 +86,7 @@ impl<T> LinkedList<T>{
             None => Err(LinkedListError::EmptyList)
         }
     }
-    pub fn addFirst(& mut self, value: T){
+    pub fn add_first(& mut self, value: T){
         let new_node = newLinkToNode(value);
         self.count+=1;
         match self.start.take() {
