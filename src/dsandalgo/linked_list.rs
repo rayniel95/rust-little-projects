@@ -91,7 +91,7 @@ impl<T> LinkedList<T>{
         self.count+=1;
         match self.start.take() {
             Some(pointer) => {
-                new_node.borrow_mut().next = Some(pointer);
+                (*new_node).borrow_mut().next = Some(pointer);
                 self.start = Some(Rc::clone(&new_node));
             }
             None => {
