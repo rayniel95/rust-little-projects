@@ -66,10 +66,10 @@ impl<T> LinkedList<T>{
         self.tail = Some(Rc::clone(&new_node));
     }
 
-    pub fn popFirst(& mut self) -> Result<T, LinkedListError>{
+    pub fn pop_first(& mut self) -> Result<T, LinkedListError>{
         match self.start.take(){
             Some(pointer) => {
-                match pointer.borrow_mut().next.take(){
+                match (*pointer).borrow_mut().next.take(){
                     Some(next) => {
                         self.count -= 1;
                         self.start = Some(
