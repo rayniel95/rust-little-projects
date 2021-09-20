@@ -46,7 +46,7 @@ impl<T> LinkedList<T>{
         self.count
     }
     // TODO - try to use pattern matching
-    pub fn addLast(& mut self, value: T){
+    pub fn add_last(& mut self, value: T){
         if self.count == 0{
             self.count +=1;
             let new_node = newLinkToNode(value);
