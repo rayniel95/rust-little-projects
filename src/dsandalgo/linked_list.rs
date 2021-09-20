@@ -62,7 +62,7 @@ impl<T> LinkedList<T>{
                 "lenght greater or equal than one and tail ponting to None"
             ) // TODO - trt to create a error for this
         };
-        tail.borrow_mut().next = Some(Rc::clone(&new_node));
+        (*tail).borrow_mut().next = Some(Rc::clone(&new_node));
         self.tail = Some(Rc::clone(&new_node));
     }
 
@@ -112,7 +112,8 @@ impl<T> LinkedList<T>{
                     self.start.take().unwrap()
                 ).ok().unwrap().into_inner().value);
         };
-        // TODO - try to do this without use a rc pointer for iterate
+        // TODO - try to do this without use a rc pointer for iterate, maybe
+        // use ref
         let mut pointer = self.start.take().unwrap();
         self.start = Some(Rc::clone(&pointer));
         for _ in 1..self.count {
