@@ -1,6 +1,5 @@
-use std::borrow::{Borrow, BorrowMut};
-use std::rc::{Rc, Weak};
-use std::cell::{RefCell, Ref, RefMut, UnsafeCell};
+use std::rc::Rc;
+use std::cell::RefCell;
 
 type LinkToNode<T> = Rc<RefCell<LinkedNode<T>>>;
 
@@ -10,8 +9,8 @@ fn newLinkToNode<T>(value: T) -> LinkToNode<T>{
 }
 
 struct LinkedNode<T>{
-    pub value: T,
-    pub next: Option<LinkToNode<T>>
+    value: T,
+    next: Option<LinkToNode<T>>
 }
 
 impl<T> LinkedNode<T>{
@@ -113,16 +112,17 @@ impl<T> LinkedList<T>{
         let mut pointer = self.start.take().unwrap();
         self.start = Some(Rc::clone(&pointer));
         for _ in 1..self.count {
-            pointer = match (*pointer).borrow().next {
+            let temp = match &((*pointer).borrow().next) {
                 Some(value) =>{
-                    value
+                    Rc::clone(value)
                 }
                 None=>{
                     break;
                 }
             };
+            pointer = temp;
         }
-        let result = (*pointer).borrow().next.take().unwrap();
+        let result = (*pointer).borrow_mut().next.take().unwrap();
         self.tail = Some(pointer);
 
         Ok(Rc::try_unwrap(result).ok().unwrap().into_inner().value)
