@@ -56,13 +56,9 @@ impl<T> LinkedList<T>{
         }
         self.count+=1;
         let new_node = newLinkToNode(value);
-        let tail = match self.tail.take(){
-            Some(value)=> value,
-            None => panic!(
-                "lenght greater or equal than one and tail ponting to None"
-            ) // TODO - trt to create a error for this
-        };
-        (*tail).borrow_mut().next = Some(Rc::clone(&new_node));
+        (*self.tail.take().unwrap()).borrow_mut().next = Some(
+            Rc::clone(&new_node)
+        );
         self.tail = Some(Rc::clone(&new_node));
     }
 
