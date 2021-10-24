@@ -1,3 +1,4 @@
+use std::ops::Index;
 use std::rc::Rc;
 use std::cell::RefCell;
 
@@ -108,7 +109,9 @@ impl<T> LinkedList<T>{
                 ).ok().unwrap().into_inner().value);
         };
         // TODO - try to do this without use a rc pointer for iterate, maybe
-        // use ref
+        // use ref, similar al too many lists donde retornan un ref a un nodo
+        // interno
+        // TODO - this code is the same in indexer, create a method
         let mut pointer = self.start.take().unwrap();
         self.start = Some(Rc::clone(&pointer));
         for _ in 1..self.count {
@@ -124,11 +127,29 @@ impl<T> LinkedList<T>{
         }
         let result = (*pointer).borrow_mut().next.take().unwrap();
         self.tail = Some(pointer);
-
+        // TODO - create error for catch this, write a match
         Ok(Rc::try_unwrap(result).ok().unwrap().into_inner().value)
     }
 }
 
+impl<T> Index<u32> for LinkedList<T>{
+    type Output = T;
+    fn index(&self, index: u32) -> &Self::Output {
+        let mut pointer = self.start.take().unwrap();
+        self.start = Some(Rc::clone(&pointer));
+        for _ in 1..self.count {
+            let temp = match &((*pointer).borrow().next) {
+                Some(value) =>{
+                    Rc::clone(value)
+                }
+                None=>{
+                    break;
+                }
+            };
+            pointer = temp;
+        }
+    }
+}
 // TODO - implement indexable
 // TODO - implement iterable
 // TODO - implement Extend<&'a T>, Extend<T>, From<&'_ [T]> for Vec<T, Global>,
