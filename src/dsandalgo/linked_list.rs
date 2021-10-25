@@ -1,5 +1,5 @@
 use std::ops::Index;
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
 use std::cell::{Ref, RefCell};
 
 type LinkToNode<T> = Rc<RefCell<LinkedNode<T>>>;
@@ -130,7 +130,7 @@ impl<T> LinkedList<T>{
         // TODO - create error for catch this, write a match
         Ok(Rc::try_unwrap(result).ok().unwrap().into_inner().value)
     }
-    pub fn index(& mut self, index: u32) -> Ref<T> {
+    pub fn index(& mut self, index: u32) -> Weak<RefCell<LinkedNode<T>>> {
         if index < 0 || index >= self.count{
             // index out of range
         }
@@ -156,7 +156,7 @@ impl<T> LinkedList<T>{
             pointer = temp;
         }
         
-        return Ref::clone(pointer.borrow().value);
+        return Rc::downgrade(&pointer);
     }
 }
 
