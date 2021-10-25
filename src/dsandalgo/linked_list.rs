@@ -1,6 +1,6 @@
 use std::ops::Index;
 use std::rc::Rc;
-use std::cell::RefCell;
+use std::cell::{Ref, RefCell};
 
 type LinkToNode<T> = Rc<RefCell<LinkedNode<T>>>;
 
@@ -130,14 +130,21 @@ impl<T> LinkedList<T>{
         // TODO - create error for catch this, write a match
         Ok(Rc::try_unwrap(result).ok().unwrap().into_inner().value)
     }
-}
+    pub fn index(& mut self, index: u32) -> Ref<T> {
+        if index < 0 || index >= self.count{
+            // index out of range
+        }
+        let mut pointer = match &self.start{
+            Some(reference) =>{
+                Rc::clone(reference)
+            }
+            None => {
+                // TODO - index out of range
+                panic!()
+            }
+        };
 
-impl<T> Index<u32> for LinkedList<T>{
-    type Output = T;
-    fn index(&self, index: u32) -> &Self::Output {
-        let mut pointer = self.start.take().unwrap();
-        self.start = Some(Rc::clone(&pointer));
-        for _ in 1..self.count {
+        for _ in 1..index+1 {
             let temp = match &((*pointer).borrow().next) {
                 Some(value) =>{
                     Rc::clone(value)
@@ -148,8 +155,11 @@ impl<T> Index<u32> for LinkedList<T>{
             };
             pointer = temp;
         }
+        
+        return Ref::clone(pointer.borrow().value);
     }
 }
+
 // TODO - implement indexable
 // TODO - implement iterable
 // TODO - implement Extend<&'a T>, Extend<T>, From<&'_ [T]> for Vec<T, Global>,
