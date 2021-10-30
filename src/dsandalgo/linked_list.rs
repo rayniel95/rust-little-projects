@@ -130,34 +130,7 @@ impl<T> LinkedList<T>{
         // TODO - create error for catch this, write a match
         Ok(Rc::try_unwrap(result).ok().unwrap().into_inner().value)
     }
-    pub fn index(& mut self, index: u32) -> Weak<RefCell<LinkedNode<T>>> {
-        if index < 0 || index >= self.count{
-            // index out of range
-        }
-        let mut pointer = match &self.start{
-            Some(reference) =>{
-                Rc::clone(reference)
-            }
-            None => {
-                // TODO - index out of range
-                panic!()
-            }
-        };
 
-        for _ in 1..index+1 {
-            let temp = match &((*pointer).borrow().next) {
-                Some(value) =>{
-                    Rc::clone(value)
-                }
-                None=>{
-                    break;
-                }
-            };
-            pointer = temp;
-        }
-        
-        return Rc::downgrade(&pointer);
-    }
 }
 
 // TODO - implement indexable
