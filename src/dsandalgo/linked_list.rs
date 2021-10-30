@@ -131,7 +131,6 @@ impl<T> LinkedList<T>{
 
 }
 
-// TODO - implement indexable
 // TODO - implement iterable
 // TODO - implement Extend<&'a T>, Extend<T>, From<&'_ [T]> for Vec<T, Global>,
 // From<&'_ mut [T]> for Vec<T, Global>, From<[T; N]> for Vec<T, Global>,
