@@ -1,6 +1,6 @@
-use std::ops::Index;
 use std::rc::{Rc, Weak};
 use std::cell::{Ref, RefCell};
+use std::iter::Iterator;
 
 type LinkToNode<T> = Rc<RefCell<LinkedNode<T>>>;
 
@@ -131,7 +131,30 @@ impl<T> LinkedList<T>{
 
 }
 
-// TODO - implement iterable
+impl<T> Iterator for LinkedList<T> {
+    type Item = T;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.start.take() {
+            None => None,
+            Some(first) =>{
+                match &((*first).borrow().next) {
+                    None =>{
+                        self.count = 0;
+                        self.tail.take();
+                    }
+                    Some(_)=>{
+                        self.count-=1;
+                    }
+                }
+                let mut unwrapped_first = Rc::try_unwrap(first).ok().unwrap().into_inner();
+                self.start = unwrapped_first.next.take();
+                Some(unwrapped_first.value)
+            }
+        }        
+    }
+}
+
 // TODO - implement Extend<&'a T>, Extend<T>, From<&'_ [T]> for Vec<T, Global>,
 // From<&'_ mut [T]> for Vec<T, Global>, From<[T; N]> for Vec<T, Global>,
 // From<BinaryHeap<T>> for Vec<T, Global>, From<Box<[T], A>> for Vec<T, A>,
