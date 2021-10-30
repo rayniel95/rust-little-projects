@@ -109,9 +109,7 @@ impl<T> LinkedList<T>{
                 ).ok().unwrap().into_inner().value);
         };
         // TODO - try to do this without use a rc pointer for iterate, maybe
-        // use ref, similar al too many lists donde retornan un ref a un nodo
-        // interno
-        // TODO - this code is the same in indexer, create a method
+        // use ref
         let mut pointer = self.start.take().unwrap();
         self.start = Some(Rc::clone(&pointer));
         for _ in 1..self.count {
@@ -127,7 +125,7 @@ impl<T> LinkedList<T>{
         }
         let result = (*pointer).borrow_mut().next.take().unwrap();
         self.tail = Some(pointer);
-        // TODO - create error for catch this, write a match
+
         Ok(Rc::try_unwrap(result).ok().unwrap().into_inner().value)
     }
 
