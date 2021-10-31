@@ -1,3 +1,4 @@
+use std::borrow::Borrow;
 use std::rc::{Rc, Weak};
 use std::cell::{Ref, RefCell};
 use std::iter::Iterator;
@@ -128,7 +129,17 @@ impl<T> LinkedList<T>{
 
         Ok(Rc::try_unwrap(result).ok().unwrap().into_inner().value)
     }
+    pub fn peek_first(&self)->Option<Ref<T>>{
+        self.start.as_ref().map(|node| {
+            Ref::map(node.borrow(), |node| &node.value)
+        })
+    }
 
+    pub fn peek_last(&self)->Option<Ref<T>>{
+        self.tail.as_ref().map(|node| {
+            Ref::map(node.borrow(), |node| &node.value)
+        })
+    }
 }
 
 impl<T> Iterator for LinkedList<T> {
@@ -147,6 +158,7 @@ impl<T> Iterator for LinkedList<T> {
                         self.count-=1;
                     }
                 }
+                // TODO - catch the possibles errors
                 let mut unwrapped_first = Rc::try_unwrap(first).ok().unwrap().into_inner();
                 self.start = unwrapped_first.next.take();
                 Some(unwrapped_first.value)
