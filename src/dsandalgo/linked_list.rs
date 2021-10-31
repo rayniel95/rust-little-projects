@@ -1,5 +1,4 @@
-use std::borrow::Borrow;
-use std::rc::{Rc, Weak};
+use std::rc::{Rc};
 use std::cell::{Ref, RefCell};
 use std::iter::Iterator;
 
@@ -24,7 +23,7 @@ impl<T> LinkedNode<T>{
     }
 }
 
-enum LinkedListError{
+pub enum LinkedListError{
     EmptyList
 }
 
@@ -131,13 +130,17 @@ impl<T> LinkedList<T>{
     }
     pub fn peek_first(&self)->Option<Ref<T>>{
         self.start.as_ref().map(|node| {
-            Ref::map(node.borrow(), |node| &node.value)
+            Ref::map(
+                node.as_ref().borrow(), |node| &(node.value)
+            )
         })
     }
 
     pub fn peek_last(&self)->Option<Ref<T>>{
         self.tail.as_ref().map(|node| {
-            Ref::map(node.borrow(), |node| &node.value)
+            Ref::map(
+                node.as_ref().borrow(), |node| &(node.value)
+            )
         })
     }
 }
@@ -166,6 +169,7 @@ impl<T> Iterator for LinkedList<T> {
         }        
     }
 }
+
 
 // TODO - implement Extend<&'a T>, Extend<T>, From<&'_ [T]> for Vec<T, Global>,
 // From<&'_ mut [T]> for Vec<T, Global>, From<[T; N]> for Vec<T, Global>,
