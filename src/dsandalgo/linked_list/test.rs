@@ -27,5 +27,24 @@ mod test {
         list.add_last(2);
         assert_eq!((&list).count(), 3);
     }
-   
+    #[test]
+    fn iterator_test(){
+        let vector = vec![2, 5, 6, 3, 7];
+        
+        let mut list = LinkedList::<i32>::new();
+        for element in &vector{
+            list.add_last(*element);
+        }
+        
+        let mut index=0;
+        for element in list{
+            assert_eq!(element, vector[index]);
+            index+=1;
+        }
+    }
+
+    #[test]
+    fn peek_first_test(){
+        
+    }
 }
