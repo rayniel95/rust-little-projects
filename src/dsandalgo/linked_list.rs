@@ -172,7 +172,8 @@ impl<T> Iterator for LinkedList<T> {
 
 impl<T> Drop for LinkedList<T>{
     fn drop(&mut self) {
-        todo!()
+        while let Some(_) = self.next(){
+        }
     }
 }
 
