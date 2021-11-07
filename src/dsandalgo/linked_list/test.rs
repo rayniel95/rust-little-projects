@@ -3,7 +3,7 @@ use super::linked_list::LinkedListError;
 
 #[cfg(test)]
 mod test {
-    use std::{cmp::Ordering};
+    use std::{cmp::Ordering, vec};
 
     use super::*;
 
@@ -155,5 +155,29 @@ mod test {
         }
 
         assert_eq!(index, vector.len());
+    }
+
+    #[test]
+    fn extend_test(){
+        let mut vector = vec![2, 5, 6, 3, 7, 10, 15];
+        
+        let mut list = LinkedList::<i32>::new();
+        for element in &vector{
+            list.add_last(*element);
+        }
+
+        let mut vector_clon = vector.clone();
+        vector_clon.reverse();
+
+        list.extend(vector_clon);
+
+        for index in 0..vector.len(){
+            assert_eq!(list.pop_first().unwrap_or(-1), vector[index]);
+        }
+        vector.reverse();
+        for index in 0..vector.len(){
+            assert_eq!(list.pop_first().unwrap_or(-1), vector[index]);
+        }
+        assert_eq!(list.pop_first().is_err(), true);
     }
 }
