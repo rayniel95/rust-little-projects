@@ -82,6 +82,7 @@ mod test {
             }
             index+=1;
         }
+        assert_eq!(index, vector.len());
         assert_eq!((&list).count(), 0);
         assert_eq!(list.pop_first().is_err(), true);
     }
