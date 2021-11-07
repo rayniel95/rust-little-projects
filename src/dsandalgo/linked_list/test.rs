@@ -11,6 +11,7 @@ mod test {
     fn add_last_and_count_test(){
         let mut list = LinkedList::<i32>::new();
 
+        assert_eq!((&list).count(), 0);
         list.add_last(3);
         assert_eq!((&list).count(), 1);
         list.add_last(4);
