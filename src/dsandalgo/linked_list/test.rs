@@ -1,4 +1,5 @@
 use super::linked_list::LinkedList;
+use super::linked_list::LinkedListError;
 
 #[cfg(test)]
 mod test {
@@ -52,10 +53,34 @@ mod test {
                     index+=1;
                 }
             }
-            (&mut list).pop_first();
+            list.pop_first();
         }
 
         assert_eq!(index, vector.len());
         assert_eq!(list.count(), 0);
     }
+
+    #[test]
+    fn pop_first_test() {
+        let vector = vec![2, 5, 6, 3, 7, 10, 15];
+        
+        let mut list = LinkedList::<i32>::new();
+        
+        for element in &vector{
+            list.add_last(*element);
+        }
+
+        let mut index=0;
+        loop {
+            match list.pop_first(){
+                Err(_)=>break,
+                Ok(element)=> assert_eq!(element, vector[index])
+            }
+            index+=1;
+        }
+        assert_eq!((&list).count(), 0);
+        assert_eq!(list.pop_first().is_err(), true);
+    }
+
+    
 }
