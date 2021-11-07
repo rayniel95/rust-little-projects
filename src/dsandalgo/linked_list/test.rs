@@ -135,4 +135,25 @@ mod test {
         assert_eq!((&list).count(), 0);
         assert_eq!(list.pop_last().is_err(), true);
     }
+
+    #[test]
+    fn add_first_test(){
+        let mut vector = vec![2, 5, 6, 3, 7, 10, 15];
+        
+        let mut list = LinkedList::<i32>::new();
+        for element in &vector{
+            list.add_first(*element);
+        }
+        assert_eq!((&list).count(), vector.len() as u32);
+
+        vector.reverse();
+
+        let mut index = 0;
+        for element in list{
+            assert_eq!(element, vector[index]);
+            index+=1;
+        }
+
+        assert_eq!(index, vector.len());
+    }
 }
