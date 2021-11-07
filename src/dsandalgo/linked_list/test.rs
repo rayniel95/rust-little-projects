@@ -179,6 +179,8 @@ mod test {
 
         let mut vector_clon = vector.clone();
         vector_clon.reverse();
+        
+        assert_eq!((&list).count(), vector.len() as u32);
 
         list.extend(vector_clon);
 
@@ -190,5 +192,6 @@ mod test {
             assert_eq!(list.pop_first().unwrap_or(-1), vector[index]);
         }
         assert_eq!(list.pop_first().is_err(), true);
+        assert_eq!((&list).count(), 0);
     }
 }
