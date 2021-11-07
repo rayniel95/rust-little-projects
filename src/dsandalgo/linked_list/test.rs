@@ -34,6 +34,7 @@ mod test {
             assert_eq!(element, vector[index]);
             index+=1;
         }
+        assert_eq!(index, vector.len());
     }
 
     #[test]
