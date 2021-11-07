@@ -111,30 +111,28 @@ mod test {
 
     #[test]
     fn pop_last_test(){
-        fn peek_last_test(){
-            let mut vector = vec![2, 5, 6, 3, 7, 10, 15];
-            
-            let mut list = LinkedList::<i32>::new();
-            for element in &vector{
-                list.add_last(*element);
-            }
-            
-            vector.reverse();
-    
-            let mut index = 0;
-            loop {
-                match list.pop_last() {
-                    Err(_) => break,
-                    Ok(result) => {
-                        assert_eq!(result.cmp(&vector[index]), Ordering::Equal);
-                        index+=1;
-                    }
+        let mut vector = vec![2, 5, 6, 3, 7, 10, 15];
+        
+        let mut list = LinkedList::<i32>::new();
+        for element in &vector{
+            list.add_last(*element);
+        }
+        
+        vector.reverse();
+
+        let mut index = 0;
+        loop {
+            match list.pop_last() {
+                Err(_) => break,
+                Ok(result) => {
+                    assert_eq!(result.cmp(&vector[index]), Ordering::Equal);
+                    index+=1;
                 }
             }
-    
-            assert_eq!(index, vector.len());
-            assert_eq!((&list).count(), 0);
-            assert_eq!(list.pop_last().is_err(), true);
         }
+
+        assert_eq!(index, vector.len());
+        assert_eq!((&list).count(), 0);
+        assert_eq!(list.pop_last().is_err(), true);
     }
 }
