@@ -123,6 +123,8 @@ mod test {
         let mut vector = vec![2, 5, 6, 3, 7, 10, 15];
         
         let mut list = LinkedList::<i32>::new();
+        assert_eq!(list.pop_last().is_err(), true);
+
         for element in &vector{
             list.add_last(*element);
         }
