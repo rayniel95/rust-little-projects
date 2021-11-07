@@ -186,12 +186,4 @@ impl<T> Extend<T> for LinkedList<T>  {
     }
 }
 
-
-
-// TODO - implement From<&'_ [T]> for Vec<T, Global>,
-// From<&'_ mut [T]> for Vec<T, Global>, From<[T; N]> for Vec<T, Global>,
-// From<BinaryHeap<T>> for Vec<T, Global>, From<Box<[T], A>> for Vec<T, A>,
-// From<Vec<T, A>> for Box<[T], A>, From<VecDeque<T>> for Vec<T, Global>,
-// FromIterator<T> for Vec<T, Global>, From<Box<[T], A>> for Vec<T, A>
-
 // TODO - separate in multiple files the different implementations and tests
