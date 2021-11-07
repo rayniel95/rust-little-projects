@@ -114,7 +114,7 @@ mod test {
         }
 
         assert_eq!(index, vector.len());
-        assert_eq!(list.count(), 0);
+        assert_eq!((&list).count(), 0);
         assert_eq!(list.peek_first().is_none(), true);
     }
 
