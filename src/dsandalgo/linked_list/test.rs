@@ -82,5 +82,30 @@ mod test {
         assert_eq!(list.pop_first().is_err(), true);
     }
 
-    
+    #[test]
+    fn peek_last_test(){
+        let mut vector = vec![2, 5, 6, 3, 7, 10, 15];
+        
+        let mut list = LinkedList::<i32>::new();
+        for element in &vector{
+            list.add_last(*element);
+        }
+        
+        vector.reverse();
+
+        let mut index = 0;
+        loop {
+            match (&list).peek_last() {
+                None => break,
+                Some(result) => {
+                    assert_eq!(result.cmp(&vector[index]), Ordering::Equal);
+                    index+=1;
+                }
+            }
+            list.pop_last();
+        }
+
+        assert_eq!(index, vector.len());
+        assert_eq!(list.count(), 0);
+    }
 }

@@ -112,6 +112,7 @@ impl<T> LinkedList<T>{
         // use ref
         let mut pointer = self.start.take().unwrap();
         self.start = Some(Rc::clone(&pointer));
+        
         for _ in 1..self.count {
             let temp = match &((*pointer).borrow().next) {
                 Some(value) =>{
