@@ -41,6 +41,8 @@ mod test {
         let vector = vec![2, 5, 6, 3, 7, 10, 15];
         
         let mut list = LinkedList::<i32>::new();
+        assert_eq!(list.peek_first().is_none(), true);
+
         for element in &vector{
             list.add_last(*element);
         }
@@ -58,7 +60,8 @@ mod test {
         }
 
         assert_eq!(index, vector.len());
-        assert_eq!(list.count(), 0);
+        assert_eq!((&list).count(), 0);
+        assert_eq!(list.peek_first().is_none(), true);
     }
 
     #[test]
