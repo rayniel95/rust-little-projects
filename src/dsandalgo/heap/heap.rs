@@ -18,9 +18,9 @@ impl<T> Heap<T> {
         }
     }
 
-    // pub fn peek() -> &T{
-
-    // }
+    pub fn peek(&self) -> &T{
+        &(self.backend[0].value)
+    }
     // pub fn pop_min()->T{
 
     // }
