@@ -1,3 +1,8 @@
+struct Cell<T>{
+    value:T,
+    priority: u32
+}
+
 pub struct Heap<T>{
     backend: Vec<T>
 }
