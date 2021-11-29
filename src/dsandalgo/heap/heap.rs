@@ -53,6 +53,31 @@ impl<T> Heap<T> {
         }
     }
     fn heapify_down(& mut self){
-        todo!()
+        match &self.left {
+            None=>{}
+            Some(left_pointer)=>{
+                match &self.right{
+                    None=>{todo!("note this case")}
+                    Some(right_pointer)=>{
+                        let mut min: Rc<RefCell<Heap<T>>>;
+                        if left_pointer.borrow().cell.priority <= right_pointer.borrow().cell.priority{
+                            min = Rc::clone(&left_pointer);
+                        } else{
+                            min = Rc::clone(&right_pointer);
+                        }
+
+                        if self.cell.priority> min.borrow().cell.priority{
+                            mem::swap(& mut self.cell, &mut min.borrow_mut().cell);
+                            min.borrow_mut().heapify_down();
+                        }
+                        return
+                    }
+                };
+                if self.cell.priority> left_pointer.borrow().cell.priority{
+                    mem::swap(& mut self.cell, &mut left_pointer.borrow_mut().cell);
+                    left_pointer.borrow_mut().heapify_down();
+                }
+            }
+        }
     }
 }
