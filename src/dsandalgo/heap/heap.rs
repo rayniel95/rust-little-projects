@@ -9,14 +9,14 @@ struct Cell<T>{
 
 struct LinkedNode<T>{
     next: Option<Rc<RefCell<LinkedNode<T>>>>,
-    prev: Option<Rc<RefCell<LinkedNode<T>>>>,
+    prev: Option<Weak<RefCell<LinkedNode<T>>>>,
     value: Heap<T>
 }
 
 pub struct HeapTree<T>{
-    start: Option<Rc<RefCell<LinkedNode<T>>>>,
+    start: Option<Weak<RefCell<LinkedNode<T>>>>,
     end: Option<Rc<RefCell<LinkedNode<T>>>>,
-    parentOfLast: Option<Rc<RefCell<LinkedNode<T>>>>,
+    parentOfLast: Option<Weak<RefCell<LinkedNode<T>>>>,
     len: u32
 }
 
@@ -94,4 +94,13 @@ impl<T> LinkedNode<T> {
             value: heap
         }
     }
+}
+
+impl<T> HeapTree<T>{
+    fn add_next_to_node(node: Rc<RefCell<LinkedNode<T>>>, to_add: LinkedNode<T>){
+        let pointer = Rc::new(RefCell::new(to_add));
+        node.borrow_mut().next=Some(Rc::clone(&pointer));
+        pointer.borrow_mut().prev = Some(Rc::downgrade(&node));
+    }
+    
 }
