@@ -1,37 +1,44 @@
 use std::usize;
+use std::{rc::{Rc, Weak}, cell::RefCell};
 
 struct Cell<T>{
     value:T,
     priority: u32
 }
 
-pub struct Heap<T>{
-    backend: Vec<Cell<T>>
+// struct LinkedNode<T>{
+
+// }
+
+// pub struct HeapTree<T>{
+
+// }
+
+struct Heap<T>{
+    cell: Cell<T>,
+    left: Option<Rc<RefCell<Heap<T>>>>,
+    right: Option<Rc<RefCell<Heap<T>>>>,
+    parent: Option<Weak<RefCell<Heap<T>>>>,
 }
 
-// TODO - copy the array if it is not large enough
 // NOTE - check the capacity and the lenght for modifications
 impl<T> Heap<T> {
-    pub fn new(capacity: usize)->Heap<T>{
+    fn new(value:T, priority: u32)->Heap<T>{
         Heap{
-            backend: Vec::with_capacity(capacity)
+            cell: Cell{
+                value: value,
+                priority: priority
+            },
+            left: None,
+            right: None,
+            parent: None
         }
     }
 
-    pub fn peek(&self) -> &T{
-        &(self.backend[0].value)
+    fn heapifyUp(){
+        todo!()
     }
-    // pub fn pop_min()->T{
-
-    // }
-    // pub fn add(value: T, priority: u32){
-
-    // }
-    // pub fn set_priority(index: u32, priority: u32){
-
-    // }
-
-    // pub fn get_index(value: T)->Vec<u32>{
-
-    // }
+    fn heapifyDown(){
+        todo!()
+    }
 }
