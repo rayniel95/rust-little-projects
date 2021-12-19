@@ -45,7 +45,7 @@ impl<T> Heap<T> {
             None => {}
             Some(reference)=>{
                 let pointer = match reference.upgrade(){
-                    None => {todo!("throw some error")}
+                    None => {todo!("return some error")}
                     Some(pointer)=> pointer
                 };
 
@@ -61,7 +61,12 @@ impl<T> Heap<T> {
             None=>{}
             Some(left_pointer)=>{
                 match &self.right{
-                    None=>{todo!("note this case")}
+                    None=>{
+                        if self.cell.priority> left_pointer.borrow().cell.priority{
+                            mem::swap(& mut self.cell, &mut left_pointer.borrow_mut().cell);
+                            left_pointer.borrow_mut().heapify_down();
+                        }
+                    }
                     Some(right_pointer)=>{
                         let mut min: Rc<RefCell<Heap<T>>>;
                         if left_pointer.borrow().cell.priority <= right_pointer.borrow().cell.priority{
@@ -74,12 +79,7 @@ impl<T> Heap<T> {
                             mem::swap(& mut self.cell, &mut min.borrow_mut().cell);
                             min.borrow_mut().heapify_down();
                         }
-                        return
                     }
-                };
-                if self.cell.priority> left_pointer.borrow().cell.priority{
-                    mem::swap(& mut self.cell, &mut left_pointer.borrow_mut().cell);
-                    left_pointer.borrow_mut().heapify_down();
                 }
             }
         }
@@ -103,4 +103,11 @@ impl<T> HeapTree<T>{
         pointer.borrow_mut().prev = Some(Rc::downgrade(&node));
     }
     
+    fn new()-> HeapTree<T>{
+        HeapTree { start: None, end: None, parentOfLast: None, len: 0 }
+    }
+
+    fn add(value: T, priority: u32){
+        
+    }
 }
