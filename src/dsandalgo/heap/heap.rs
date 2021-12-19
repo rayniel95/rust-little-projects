@@ -126,10 +126,9 @@ impl<T> LinkedNode<T> {
 }
 
 impl<T> HeapTree<T>{
-    fn add_next_to_node(node: LinkedNodePointer<T>, to_add: LinkedNode<T>){
-        let pointer = Rc::new(RefCell::new(to_add));
-        (*node).borrow_mut().next=Some(Rc::clone(&pointer));
-        (*pointer).borrow_mut().prev = Some(Rc::downgrade(&node));
+    fn add_next_to_node(node: LinkedNodePointer<T>, to_add: LinkedNodePointer<T>){
+        (*to_add).borrow_mut().prev = Some(Rc::downgrade(&node));
+        (*node).borrow_mut().next=Some(to_add);
     }
     fn new()-> HeapTree<T>{
         HeapTree { start: None, end: None, parentOfLast: None, len: 0 }
@@ -156,7 +155,13 @@ impl<T> HeapTree<T>{
                             Rc::clone(&(*end).borrow_mut().value),
                             Rc::clone(&link_to_heap)
                         );
-
+                        HeapTree::add_next_to_node(
+                            Rc::clone(&end),
+                            Rc::clone(&link_to_linkednode)
+                        );
+                        self.end = Some(link_to_linkednode);
+                        self.parentOfLast = Some(Rc::downgrade(&end));
+                        self.len+=1;
                     }
                     Some(parent)=>{
 
