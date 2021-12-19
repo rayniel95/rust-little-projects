@@ -149,8 +149,9 @@ impl<T> LinkedNode<T> {
     }
 }
 
-trait LinkedNodable<T> {
+trait LinkedNodable<T> where Self: Sized{
     fn add_next(&mut self, to_add: &LinkedNodePointer<T>);
+    fn next(&mut self)->Option<Self>;
 }
 
 impl<T> LinkedNodable<T> for LinkedNodePointer<T>{
@@ -160,6 +161,12 @@ impl<T> LinkedNodable<T> for LinkedNodePointer<T>{
         let node_to_add = Rc::clone(to_add);
         (*node_to_add).borrow_mut().prev = Some(Rc::downgrade(&node));
         (*node).borrow_mut().next=Some(node_to_add);
+    }
+    fn next(&mut self) ->Option<Self> {
+        if let Some(pointer) =  &self.borrow().next{
+            return Some(Rc::clone(pointer));
+        }
+        None
     }
 }
 
@@ -193,8 +200,10 @@ impl<T> HeapTree<T>{
                         self.len=2;
                     }
                     Some(parent)=>{
-                        let pointer_to_parent = parent.upgrade().unwrap();
-                        if (*pointer_to_parent).borrow().value.
+                        let mut pointer_to_parent = parent.upgrade().unwrap();
+                        if pointer_to_parent.borrow().value.has_right_child(){
+                            pointer_to_parent = pointer_to_parent.borrow().n
+                        }
                     }
                 }
             }
