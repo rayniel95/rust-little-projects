@@ -150,12 +150,12 @@ impl<T> LinkedNode<T> {
 }
 
 trait LinkedNodable<T> {
-    fn add_next_to_node(&mut self, to_add: &LinkedNodePointer<T>);
+    fn add_next(&mut self, to_add: &LinkedNodePointer<T>);
 }
 
 impl<T> LinkedNodable<T> for LinkedNodePointer<T>{
 
-    fn add_next_to_node(&mut self, to_add: &LinkedNodePointer<T>){
+    fn add_next(&mut self, to_add: &LinkedNodePointer<T>){
         let node = Rc::clone(self);
         let node_to_add = Rc::clone(to_add);
         (*node_to_add).borrow_mut().prev = Some(Rc::downgrade(&node));
@@ -186,7 +186,7 @@ impl<T> HeapTree<T>{
                     None=>{
                         let mut end = Rc::clone(&pointer);
                         (*end).borrow_mut().value.add_left_son(&link_to_heap);
-                        end.add_next_to_node(&link_to_linkednode);
+                        end.add_next(&link_to_linkednode);
             
                         self.end = Some(link_to_linkednode);
                         self.parentOfLast = Some(Rc::downgrade(&end));
