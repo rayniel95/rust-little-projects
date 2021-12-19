@@ -77,12 +77,12 @@ impl<T> Heap<T> {
                             (*left_pointer).borrow_mut().heapify_down();
                         }
                     }
-                    Some(right_pointer)=>{
+                    Some(right_pointer_ref)=>{
                         let mut min: HeapPointer<T>;
-                        if left_pointer.borrow().cell.priority <= right_pointer.borrow().cell.priority{
-                            min = Rc::clone(&left_pointer);
+                        if left_pointer.borrow().cell.priority <= right_pointer_ref.borrow().cell.priority{
+                            min = Rc::clone(left_pointer_ref);
                         } else{
-                            min = Rc::clone(&right_pointer);
+                            min = Rc::clone(right_pointer_ref);
                         }
 
                         if self.cell.priority > min.borrow().cell.priority{
@@ -112,7 +112,6 @@ impl<T> HeapTree<T>{
         (*node).borrow_mut().next=Some(Rc::clone(&pointer));
         (*pointer).borrow_mut().prev = Some(Rc::downgrade(&node));
     }
-    Heap::new(value, priority)
     fn new()-> HeapTree<T>{
         HeapTree { start: None, end: None, parentOfLast: None, len: 0 }
     }
