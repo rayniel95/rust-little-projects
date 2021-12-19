@@ -187,10 +187,7 @@ impl<T> HeapTree<T>{
                         let mut end = Rc::clone(&pointer);
                         (*end).borrow_mut().value.add_left_son(&link_to_heap);
                         end.add_next_to_node(&link_to_linkednode);
-                        HeapTree::add_next_to_node(
-                            Rc::clone(&end),
-                            Rc::clone(&link_to_linkednode)
-                        );
+            
                         self.end = Some(link_to_linkednode);
                         self.parentOfLast = Some(Rc::downgrade(&end));
                         self.len=2;
