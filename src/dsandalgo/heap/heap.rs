@@ -11,8 +11,8 @@ type LinkedNodeWeakPointer<T> = Weak<RefCell<LinkedNode<T>>>;
 trait Heapable<T> {
     fn has_left_child(&self)->bool;
     fn has_right_child(&self)->bool;
-    fn add_left_son(&mut self, son: HeapPointer<T>);
-    fn add_right_son(&mut self, son: HeapPointer<T>);
+    fn add_left_son(&mut self, son: &HeapPointer<T>);
+    fn add_right_son(&mut self, son: &HeapPointer<T>);
 }
 
 impl<T> Heapable<T> for HeapPointer<T>{
@@ -29,21 +29,23 @@ impl<T> Heapable<T> for HeapPointer<T>{
         false
     }
 
-    fn add_left_son(&mut self, son: HeapPointer<T>){
+    fn add_left_son(&mut self, son: &HeapPointer<T>){
+        let pointer_son = Rc::clone(son);
         let node = Rc::clone(self);
         (*node).borrow_mut().left = Some(
-            Rc::clone(&son)
+            Rc::clone(son)
         );
-        (*son).borrow_mut().parent = Some(
+        (*pointer_son).borrow_mut().parent = Some(
             Rc::downgrade(&node)
         );
     }
-    fn add_right_son(&mut self, son: HeapPointer<T>){
+    fn add_right_son(&mut self, son: &HeapPointer<T>){
+        let pointer_son = Rc::clone(son);
         let node = Rc::clone(self);
         (*node).borrow_mut().right = Some(
-            Rc::clone(&son)
+            Rc::clone(son)
         );
-        (*son).borrow_mut().parent = Some(
+        (*pointer_son).borrow_mut().parent = Some(
             Rc::downgrade(&node)
         );
     }
