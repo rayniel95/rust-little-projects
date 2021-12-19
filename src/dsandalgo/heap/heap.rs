@@ -8,6 +8,9 @@ type LinkedNodePointer<T> = Rc<RefCell<LinkedNode<T>>>;
 type HeapWeakPointer<T> = Weak<RefCell<Heap<T>>>;
 type LinkedNodeWeakPointer<T> = Weak<RefCell<LinkedNode<T>>>;
 
+
+
+
 struct Cell<T>{
     value:T,
     priority: u32
@@ -94,6 +97,22 @@ impl<T> Heap<T> {
             }
         }
     }
+    fn add_left_son(node: HeapPointer<T>, son: HeapPointer<T>){
+        (*node).borrow_mut().left = Some(
+            Rc::clone(&son)
+        );
+        (*son).borrow_mut().parent = Some(
+            Rc::downgrade(&node)
+        );
+    }
+    fn add_right_son(node: HeapPointer<T>, son: HeapPointer<T>){
+        (*node).borrow_mut().right = Some(
+            Rc::clone(&son)
+        );
+        (*son).borrow_mut().parent = Some(
+            Rc::downgrade(&node)
+        );
+    }
 }
 
 impl<T> LinkedNode<T> {
@@ -120,21 +139,22 @@ impl<T> HeapTree<T>{
         let link_to_heap = Rc::new(
             RefCell::new(Heap::new(value, priority))
         );
-        let pointer = Rc::new(
-            RefCell::new(LinkedNode::new())
+        let link_to_linkednode = Rc::new(
+            RefCell::new(LinkedNode::new(Rc::clone(&link_to_heap)))
         );
         match &self.end{
             None=>{
-                self.end = Some(Rc::clone(&pointer));
-                self.start = Some(Rc::downgrade(&pointer));
+                self.end = Some(Rc::clone(&link_to_linkednode));
+                self.start = Some(Rc::downgrade(&link_to_linkednode));
                 self.len=1;
             }
             Some(pointer)=>{
                 match &self.parentOfLast{
                     None=>{
                         let mut end = self.end.take().unwrap();
-                        (*end).borrow_mut().value.left = Some(
-                            Rc::clone()
+                        Heap::add_left_son(
+                            Rc::clone(&(*end).borrow_mut().value),
+                            Rc::clone(&link_to_heap)
                         );
 
                     }
