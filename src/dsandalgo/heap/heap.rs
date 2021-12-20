@@ -53,23 +53,23 @@ impl<T> Heapable<T> for HeapPointer<T>{
     }
     fn pop_left_son(&mut self) ->Option<Self> {
         let mut pointer = Rc::clone(self);
-        match (*pointer).borrow_mut().left.take(){
+        let result = match (*pointer).borrow_mut().left.take(){
             None => None,
             Some(son)=>{
                 (*son).borrow_mut().parent=None;
                 Some(son)
             }
-        }
+        }; result
     }
     fn pop_right_son(&mut self) ->Option<Self> {
         let mut pointer = Rc::clone(self);
-        match (*pointer).borrow_mut().right.take(){
+        let result = match (*pointer).borrow_mut().right.take(){
             None => None,
             Some(son)=>{
                 (*son).borrow_mut().parent=None;
                 Some(son)
             }
-        }
+        }; result
     }
 }
 
@@ -97,7 +97,7 @@ struct Heap<T>{
     right: Option<HeapPointer<T>>,
     parent: Option<HeapWeakPointer<T>>,
 }
-// NOTE - check the capacity and the lenght for modifications
+
 impl<T> Heap<T> {
     fn new(value:T, priority: u32)->Heap<T>{
         Heap{
@@ -173,7 +173,7 @@ impl<T> LinkedNode<T> {
 
 trait LinkedNodable<T> where Self: Sized{
     fn add_next(&mut self, to_add: &LinkedNodePointer<T>);
-    fn next(&mut self)->Option<Self>;
+    fn get_next(&mut self)->Option<Self>;
     fn pop_next(&mut self)->Option<Self>;
 }
 
@@ -185,7 +185,7 @@ impl<T> LinkedNodable<T> for LinkedNodePointer<T>{
         (*node_to_add).borrow_mut().prev = Some(Rc::downgrade(&node));
         (*node).borrow_mut().next=Some(node_to_add);
     }
-    fn next(&mut self) ->Option<Self> {
+    fn get_next(&mut self) ->Option<Self> {
         if let Some(pointer) =  &self.borrow().next{
             return Some(Rc::clone(pointer));
         }
@@ -193,12 +193,12 @@ impl<T> LinkedNodable<T> for LinkedNodePointer<T>{
     }
     fn pop_next(&mut self) ->Option<Self> {
         let node = Rc::clone(self);
-        match (*node).borrow_mut().next.take() {
+        let result = match (*node).borrow_mut().next.take() {
             None=>None,
             Some(pointer)=>{
                 Some(pointer)
             }
-        }
+        }; result
     }
 }
 
@@ -220,7 +220,7 @@ impl<T> HeapTree<T>{
                 self.start = Some(Rc::downgrade(&link_to_linkednode));
                 self.len=1;
             }
-            Some(pointer)=>{
+            Some(mut pointer)=>{
                 match &self.parentOfLast{
                     None=>{
                         (*pointer).borrow_mut().value.add_left_son(&link_to_heap);
@@ -229,7 +229,7 @@ impl<T> HeapTree<T>{
                     Some(parent)=>{
                         let mut pointer_to_parent = parent.upgrade().unwrap();
                         if pointer_to_parent.borrow().value.has_right_child(){
-                            pointer_to_parent = pointer_to_parent.next().unwrap();
+                            pointer_to_parent = pointer_to_parent.get_next().unwrap();
                             (*pointer_to_parent).borrow_mut().value.add_left_son(
                                 &link_to_heap
                             );
@@ -259,7 +259,9 @@ impl<T> HeapTree<T>{
                         ).ok().unwrap().into_inner().cell.value)
                     }
                     Some(parent)=>{
-
+                        // let new_end = Weak::clone(end_pointer.borrow().prev.as_ref().unwrap());
+                        // let owner= new_end.upgrade();
+                        None
                     }
                 }
             }
