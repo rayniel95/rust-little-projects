@@ -196,6 +196,7 @@ impl<T> LinkedNodable<T> for LinkedNodePointer<T>{
         let result = match (*node).borrow_mut().next.take() {
             None=>None,
             Some(pointer)=>{
+                (*pointer).borrow_mut().prev = None;
                 Some(pointer)
             }
         }; result
@@ -259,8 +260,10 @@ impl<T> HeapTree<T>{
                         ).ok().unwrap().into_inner().cell.value)
                     }
                     Some(parent)=>{
-                        // let new_end = Weak::clone(end_pointer.borrow().prev.as_ref().unwrap());
-                        // let owner= new_end.upgrade();
+                        let new_end = Weak::clone(
+                            end_pointer.borrow().prev.as_ref().unwrap()
+                        ).upgrade().unwrap();
+
                         None
                     }
                 }
