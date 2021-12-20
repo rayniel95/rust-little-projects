@@ -219,7 +219,12 @@ impl<T> HeapTree<T>{
             Some(end_pointer)=>{
                 match &self.parentOfLast {
                     None=>{
-
+                        self.start.take();
+                        self.len-=1;
+                        Some(
+                            Rc::try_unwrap(Rc::try_unwrap(end_pointer)
+                            .ok().unwrap().into_inner().value
+                        ).ok().unwrap().into_inner().cell.value)
                     }
                     Some(parent)=>{
 
