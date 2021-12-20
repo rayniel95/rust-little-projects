@@ -11,13 +11,22 @@ type LinkedNodeWeakPointer<T> = Weak<RefCell<LinkedNode<T>>>;
 trait Heapable<T> where Self: Sized {
     fn has_left_child(&self)->bool;
     fn has_right_child(&self)->bool;
-    fn add_left_son(&mut self, son: &HeapPointer<T>);
-    fn add_right_son(&mut self, son: &HeapPointer<T>);
+    fn add_left_son(&mut self, son: &Self);
+    fn add_right_son(&mut self, son: &Self);
     fn pop_right_son(&mut self) ->Option<Self>;
     fn pop_left_son(&mut self)->Option<Self>;
+    fn is_right_child(&self, other: &Self)->bool;
+    fn is_left_child(&self, other: &Self)->bool;
 }
 
 impl<T> Heapable<T> for HeapPointer<T>{
+    fn is_right_child(&self, other: &Self)->bool{
+        Rc::ptr_eq(self, other)
+    }
+    fn is_left_child(&self, other: &Self)->bool{
+        Rc::ptr_eq(self, other)
+    }
+
     fn has_left_child(&self) ->bool {
         if let Some(_) = self.borrow().left{
             return true;
@@ -172,7 +181,7 @@ impl<T> LinkedNode<T> {
 }
 
 trait LinkedNodable<T> where Self: Sized{
-    fn add_next(&mut self, to_add: &LinkedNodePointer<T>);
+    fn add_next(&mut self, to_add: &Self);
     fn get_next(&mut self)->Option<Self>;
     fn pop_next(&mut self)->Option<Self>;
 }
@@ -260,9 +269,17 @@ impl<T> HeapTree<T>{
                         ).ok().unwrap().into_inner().cell.value)
                     }
                     Some(parent)=>{
-                        let new_end = Weak::clone(
+                        let mut new_end_pointer = Weak::clone(
                             end_pointer.borrow().prev.as_ref().unwrap()
                         ).upgrade().unwrap();
+                        new_end_pointer.pop_next().unwrap();
+                        self.end = Some(new_end_pointer);
+                        
+                        let end_heap_pointer = Rc::clone(
+                            &end_pointer.borrow().value
+                        );
+                        let pointer_to_parent = parent.upgrade().unwrap();
+                        if pointer_to_parent.borrow().value.
 
                         None
                     }
