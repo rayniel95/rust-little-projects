@@ -189,24 +189,31 @@ impl<T> HeapTree<T>{
                 self.len=1;
             }
             Some(pointer)=>{
+                let mut end = Rc::clone(pointer);
                 match &self.parentOfLast{
                     None=>{
-                        let mut end = Rc::clone(&pointer);
                         (*end).borrow_mut().value.add_left_son(&link_to_heap);
-                        end.add_next(&link_to_linkednode);
-            
-                        self.end = Some(link_to_linkednode);
                         self.parentOfLast = Some(Rc::downgrade(&end));
-                        self.len=2;
                     }
                     Some(parent)=>{
                         let mut pointer_to_parent = parent.upgrade().unwrap();
                         if pointer_to_parent.borrow().value.has_right_child(){
-                            pointer_to_parent = pointer_to_parent.borrow().n
+                            pointer_to_parent = pointer_to_parent.next().unwrap();
+                            (*pointer_to_parent).borrow_mut().value.add_left_son(
+                                &link_to_heap
+                            );
+                            self.parentOfLast = Some(Rc::downgrade(&pointer_to_parent));
                         }
+                        (*pointer_to_parent).borrow_mut().value.add_right_son(&link_to_heap);
                     }
-                }
+                };
+                end.add_next(&link_to_linkednode);
+                self.end = Some(link_to_linkednode);
+                self.len+=1;
             }
         }
+    }
+    fn pop(&mut self){
+        
     }
 }
