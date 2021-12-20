@@ -209,14 +209,22 @@ impl<T> HeapTree<T>{
                 pointer.add_next(&link_to_linkednode);
                 self.end = Some(link_to_linkednode);
                 self.len+=1;
+                (*link_to_heap).borrow_mut().heapify_up();
             }
         }
     }
     fn pop(&mut self)->Option<T>{
         match self.end.take(){
             None => None,
-            Some(end_pointer_ref)=>{
+            Some(end_pointer)=>{
+                match &self.parentOfLast {
+                    None=>{
 
+                    }
+                    Some(parent)=>{
+
+                    }
+                }
             }
         }
     }
