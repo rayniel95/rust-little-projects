@@ -182,18 +182,17 @@ impl<T> HeapTree<T>{
         let link_to_linkednode = Rc::new(
             RefCell::new(LinkedNode::new(Rc::clone(&link_to_heap)))
         );
-        match &self.end.take(){
+        match self.end.take(){
             None=>{
                 self.end = Some(Rc::clone(&link_to_linkednode));
                 self.start = Some(Rc::downgrade(&link_to_linkednode));
                 self.len=1;
             }
             Some(pointer)=>{
-                let mut end = Rc::clone(pointer);
                 match &self.parentOfLast{
                     None=>{
-                        (*end).borrow_mut().value.add_left_son(&link_to_heap);
-                        self.parentOfLast = Some(Rc::downgrade(&end));
+                        (*pointer).borrow_mut().value.add_left_son(&link_to_heap);
+                        self.parentOfLast = Some(Rc::downgrade(&pointer));
                     }
                     Some(parent)=>{
                         let mut pointer_to_parent = parent.upgrade().unwrap();
@@ -207,13 +206,18 @@ impl<T> HeapTree<T>{
                         (*pointer_to_parent).borrow_mut().value.add_right_son(&link_to_heap);
                     }
                 };
-                end.add_next(&link_to_linkednode);
+                pointer.add_next(&link_to_linkednode);
                 self.end = Some(link_to_linkednode);
                 self.len+=1;
             }
         }
     }
-    fn pop(&mut self){
-        
+    fn pop(&mut self)->Option<T>{
+        match self.end.take(){
+            None => None,
+            Some(end_pointer_ref)=>{
+
+            }
+        }
     }
 }
