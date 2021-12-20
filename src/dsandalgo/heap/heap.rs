@@ -152,6 +152,8 @@ impl<T> LinkedNode<T> {
 trait LinkedNodable<T> where Self: Sized{
     fn add_next(&mut self, to_add: &LinkedNodePointer<T>);
     fn next(&mut self)->Option<Self>;
+    fn pop_next(&mut self)->Option<Self>;
+    fn pop_value(&mut self)->Option<Self>;
 }
 
 impl<T> LinkedNodable<T> for LinkedNodePointer<T>{
@@ -167,6 +169,15 @@ impl<T> LinkedNodable<T> for LinkedNodePointer<T>{
             return Some(Rc::clone(pointer));
         }
         None
+    }
+    fn pop_next(&mut self) ->Option<Self> {
+        let node = Rc::clone(self);
+        match (*node).borrow_mut().next.take() {
+            None=>None,
+            Some(pointer)=>{
+                Some(pointer)
+            }
+        }
     }
 }
 
