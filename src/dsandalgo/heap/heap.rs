@@ -8,11 +8,13 @@ type LinkedNodePointer<T> = Rc<RefCell<LinkedNode<T>>>;
 type HeapWeakPointer<T> = Weak<RefCell<Heap<T>>>;
 type LinkedNodeWeakPointer<T> = Weak<RefCell<LinkedNode<T>>>;
 
-trait Heapable<T> {
+trait Heapable<T> where Self: Sized {
     fn has_left_child(&self)->bool;
     fn has_right_child(&self)->bool;
     fn add_left_son(&mut self, son: &HeapPointer<T>);
     fn add_right_son(&mut self, son: &HeapPointer<T>);
+    fn pop_right_son(&mut self) ->Option<Self>;
+    fn pop_left_son(&mut self)->Option<Self>;
 }
 
 impl<T> Heapable<T> for HeapPointer<T>{
@@ -48,6 +50,26 @@ impl<T> Heapable<T> for HeapPointer<T>{
         (*pointer_son).borrow_mut().parent = Some(
             Rc::downgrade(&node)
         );
+    }
+    fn pop_left_son(&mut self) ->Option<Self> {
+        let mut pointer = Rc::clone(self);
+        match (*pointer).borrow_mut().left.take(){
+            None => None,
+            Some(son)=>{
+                (*son).borrow_mut().parent=None;
+                Some(son)
+            }
+        }
+    }
+    fn pop_right_son(&mut self) ->Option<Self> {
+        let mut pointer = Rc::clone(self);
+        match (*pointer).borrow_mut().right.take(){
+            None => None,
+            Some(son)=>{
+                (*son).borrow_mut().parent=None;
+                Some(son)
+            }
+        }
     }
 }
 
@@ -153,7 +175,6 @@ trait LinkedNodable<T> where Self: Sized{
     fn add_next(&mut self, to_add: &LinkedNodePointer<T>);
     fn next(&mut self)->Option<Self>;
     fn pop_next(&mut self)->Option<Self>;
-    fn pop_value(&mut self)->Option<Self>;
 }
 
 impl<T> LinkedNodable<T> for LinkedNodePointer<T>{
