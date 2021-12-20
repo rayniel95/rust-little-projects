@@ -1,5 +1,3 @@
-use std::borrow::BorrowMut;
-use std::usize;
 use std::{rc::{Rc, Weak}, cell::RefCell};
 use std::mem;
 
@@ -269,7 +267,7 @@ impl<T> HeapTree<T>{
         match self.end.take(){
             None => None,
             Some(end_pointer)=>{
-                match &self.parentOfLast {
+                match self.parentOfLast.take() {
                     None=>{
                         self.start.take();
                         self.len-=1;
@@ -290,12 +288,34 @@ impl<T> HeapTree<T>{
                         );
                         let pointer_to_parent = parent.upgrade().unwrap();
                         if pointer_to_parent.borrow().value.is_left_child(&end_heap_pointer){
-
+                            (*pointer_to_parent).borrow_mut().value.pop_left_son();
+                            self.parentOfLast = match &pointer_to_parent.borrow().prev {
+                                None=> None,
+                                Some(pointer)=>{
+                                    Some(
+                                        Weak::clone(pointer)
+                                    )
+                                }  
+                            };
                         } else{
-
+                            (*pointer_to_parent).borrow_mut().value.pop_right_son();
                         }
-
-                        None
+                        self.len-=1;
+                        // TODO - this code need to be refactorized
+                        let start = self.start.take()
+                            .unwrap().upgrade().unwrap();
+                        mem::swap(
+                            &mut (*(*start).borrow_mut().value).borrow_mut().cell,
+                            &mut (*end_heap_pointer).borrow_mut().cell
+                        );
+                        (*(*start).borrow_mut().value).borrow_mut().heapify_down();
+                        self.start = Some(Rc::downgrade(&start));
+                        drop(end_heap_pointer);
+                        Some(
+                            Rc::try_unwrap(Rc::try_unwrap(end_pointer)
+                            .ok().unwrap().into_inner().value)
+                            .ok().unwrap().into_inner().cell.value
+                        )
                     }
                 }
             }
