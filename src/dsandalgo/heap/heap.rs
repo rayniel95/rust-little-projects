@@ -21,10 +21,20 @@ trait Heapable<T> where Self: Sized {
 
 impl<T> Heapable<T> for HeapPointer<T>{
     fn is_right_child(&self, other: &Self)->bool{
-        Rc::ptr_eq(self, other)
+        match &self.borrow().right {
+            None=> false,
+            Some(son)=>{
+                Rc::ptr_eq(son, other)
+            }
+        }
     }
     fn is_left_child(&self, other: &Self)->bool{
-        Rc::ptr_eq(self, other)
+        match &self.borrow().left {
+            None=> false,
+            Some(son)=>{
+                Rc::ptr_eq(son, other)
+            }
+        }
     }
 
     fn has_left_child(&self) ->bool {
@@ -279,7 +289,11 @@ impl<T> HeapTree<T>{
                             &end_pointer.borrow().value
                         );
                         let pointer_to_parent = parent.upgrade().unwrap();
-                        if pointer_to_parent.borrow().value.
+                        if pointer_to_parent.borrow().value.is_left_child(&end_heap_pointer){
+
+                        } else{
+
+                        }
 
                         None
                     }
