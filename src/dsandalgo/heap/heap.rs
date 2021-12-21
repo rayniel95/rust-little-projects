@@ -102,13 +102,13 @@ struct LinkedNode<T>{
 }
 
 pub struct HeapTree<T>{
-    start: Option<LinkedNodeWeakPointer<T>>,
+    start: Option<LinkedNodePointer<T>>,
     end: Option<LinkedNodePointer<T>>,
     parentOfLast: Option<LinkedNodeWeakPointer<T>>,
     len: u32
 }
 
-struct Heap<T>{
+pub(crate) struct Heap<T>{
     cell: Cell<T>,
     left: Option<HeapPointer<T>>,
     right: Option<HeapPointer<T>>,
@@ -221,11 +221,11 @@ impl<T> LinkedNodable<T> for LinkedNodePointer<T>{
 }
 
 impl<T> HeapTree<T>{
-    fn new()-> HeapTree<T>{
+    pub fn new()-> HeapTree<T>{
         HeapTree { start: None, end: None, parentOfLast: None, len: 0 }
     }
 
-    fn add(&mut self, value: T, priority: u32){
+    pub fn add(&mut self, value: T, priority: u32){
         let link_to_heap = Rc::new(
             RefCell::new(Heap::new(value, priority))
         );
@@ -263,7 +263,7 @@ impl<T> HeapTree<T>{
             }
         }
     }
-    fn pop(&mut self)->Option<T>{
+    pub fn pop(&mut self)->Option<T>{
         match self.end.take(){
             None => None,
             Some(end_pointer)=>{
