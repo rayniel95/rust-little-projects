@@ -16,9 +16,9 @@ mod test {
             let number = gen.gen::<u32>();
             my_heap.add(number, number);
         }
-
+        print!("**********");
         let mut min = my_heap.pop().unwrap();
-        for _ in 1..100000{
+        for _ in 1..5000{
             let mut new_min = my_heap.pop().unwrap();
 
             if new_min < min{
@@ -27,6 +27,6 @@ mod test {
             }
             min = new_min;
         }
-
+        
     }
 }
