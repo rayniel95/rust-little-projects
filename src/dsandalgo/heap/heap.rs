@@ -139,8 +139,8 @@ impl<T> Heap<T> {
 
                 if pointer.borrow().cell.priority > self.cell.priority{
                     mem::swap(&mut (*pointer).borrow_mut().cell, &mut self.cell);
+                    (*pointer).borrow_mut().heapify_up();
                 }
-                (*pointer).borrow_mut().heapify_up();
             }
         }
     }
@@ -235,7 +235,7 @@ impl<T> HeapTree<T>{
         match self.end.take(){
             None=>{
                 self.end = Some(Rc::clone(&link_to_linkednode));
-                self.start = Some(Rc::downgrade(&link_to_linkednode));
+                self.start = Some(Rc::clone(&link_to_linkednode));
                 self.len=1;
             }
             Some(mut pointer)=>{
@@ -252,8 +252,9 @@ impl<T> HeapTree<T>{
                                 &link_to_heap
                             );
                             self.parentOfLast = Some(Rc::downgrade(&pointer_to_parent));
+                        }else{
+                            (*pointer_to_parent).borrow_mut().value.add_right_son(&link_to_heap);
                         }
-                        (*pointer_to_parent).borrow_mut().value.add_right_son(&link_to_heap);
                     }
                 };
                 pointer.add_next(&link_to_linkednode);
@@ -303,13 +304,13 @@ impl<T> HeapTree<T>{
                         self.len-=1;
                         // TODO - this code need to be refactorized
                         let start = self.start.take()
-                            .unwrap().upgrade().unwrap();
+                            .unwrap();
                         mem::swap(
                             &mut (*(*start).borrow_mut().value).borrow_mut().cell,
                             &mut (*end_heap_pointer).borrow_mut().cell
                         );
                         (*(*start).borrow_mut().value).borrow_mut().heapify_down();
-                        self.start = Some(Rc::downgrade(&start));
+                        self.start = Some(Rc::clone(&start));
                         drop(end_heap_pointer);
                         Some(
                             Rc::try_unwrap(Rc::try_unwrap(end_pointer)
