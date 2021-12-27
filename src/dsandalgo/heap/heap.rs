@@ -236,6 +236,15 @@ impl<T> LinkedNodable<T> for LinkedNodePointer<T>{
         (*node_to_add).borrow_mut().prev = Some(Rc::downgrade(&node));
         (*node).borrow_mut().next=Some(node_to_add);
     }
+    #[test_ensures(
+        ret.is_some() -> Rc::ptr_eq(
+            self.borrow().next.as_ref().unwrap(),
+            ret.as_ref().unwrap()
+        )
+    )]
+    #[test_ensures(
+        self.borrow().next.is_none() -> ret.is_none()
+    )]
     fn get_next(&mut self) ->Option<Self> {
         if let Some(pointer) =  &self.borrow().next{
             return Some(Rc::clone(pointer));
