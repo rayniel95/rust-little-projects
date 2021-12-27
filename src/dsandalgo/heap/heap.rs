@@ -275,6 +275,27 @@ impl<T> HeapTree<T>{
         // TODO - here to test the linked list structure and that all nodes are 
         // reachables
     )]
+    #[test_ensures(
+        self.len == old(self.len) + 1
+    )]
+    #[test_ensures(
+        self.start.is_some() && self.end.is_some()
+    )]
+    #[test_ensures(
+        self.len == 1 -> old(self.parentOfLast.is_none()) && self.parentOfLast.is_none()
+    )]
+    #[test_ensures(
+        self.len == 2 -> old(self.parentOfLast.is_none()) && self.parentOfLast.is_some()
+    )]
+    #[test_ensures(
+        old(self.end.is_some()) -> self.end.is_some()
+    )]
+    // #[test_ensures(
+    //     old(self.end.is_some()) -> !Rc::ptr_eq(
+    //         old(&Rc::clone(self.end)),
+    //         self.end.as_ref().unwrap()
+    //     )
+    // )]
     pub fn add(&mut self, value: T, priority: u32){
         let link_to_heap = Rc::new(
             RefCell::new(Heap::new(value, priority))
@@ -373,4 +394,8 @@ impl<T> HeapTree<T>{
             }
         }
     }
+}
+
+impl Clone for Option<Rc<RefCell<LinkedNode<T>>>> {
+    
 }
