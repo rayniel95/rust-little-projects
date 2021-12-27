@@ -212,7 +212,24 @@ trait LinkedNodable<T> where Self: Sized{
 }
 
 impl<T> LinkedNodable<T> for LinkedNodePointer<T>{
-
+    #[test_requires(
+        Rc::clone(self).borrow().next.is_none() && 
+        Rc::clone(to_add).borrow().prev.is_none() && 
+        Rc::clone(to_add).borrow().next.is_none()
+    )]
+    #[test_ensures(
+        Rc::clone(self).borrow().next.is_some() && 
+        Rc::clone(to_add).borrow().prev.is_some() && 
+        Rc::clone(to_add).borrow().next.is_none() &&
+        Rc::ptr_eq(
+            Rc::clone(self).borrow().next.as_ref().unwrap(),
+            to_add
+        ) &&
+        Rc::ptr_eq(
+            &Rc::clone(to_add).borrow().prev.as_ref().unwrap().upgrade().unwrap(),
+            self
+        )
+    )]
     fn add_next(&mut self, to_add: &LinkedNodePointer<T>){
         let node = Rc::clone(self);
         let node_to_add = Rc::clone(to_add);
