@@ -140,6 +140,9 @@ impl<T> Heap<T> {
     #[test_ensures(
         self.parent.is_some() -> old(self.parent.is_some() && self.parent.as_ref().unwrap().upgrade().is_some()) 
     )]
+    #[test_ensures(
+        self.parent.is_some() -> self.cell.priority >= self.parent.as_ref().unwrap().upgrade().unwrap().borrow().cell.priority
+    )]
     fn heapify_up(& mut self){
         match &self.parent{
             None => {} 
@@ -239,6 +242,13 @@ impl<T> HeapTree<T>{
         HeapTree { start: None, end: None, parentOfLast: None, len: 0 }
     }
 
+    #[test_invariant(
+        // TODO - here to test the heap structure and that all nodes are reachables
+    )]
+    #[test_invariant(
+        // TODO - here to test the linked list structure and that all nodes are 
+        // reachables
+    )]
     pub fn add(&mut self, value: T, priority: u32){
         let link_to_heap = Rc::new(
             RefCell::new(Heap::new(value, priority))
