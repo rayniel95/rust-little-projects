@@ -1,6 +1,8 @@
 use std::{rc::{Rc, Weak}, cell::RefCell};
 use std::mem;
 
+use contracts::*;
+
 type HeapPointer<T> = Rc<RefCell<Heap<T>>>;
 type LinkedNodePointer<T> = Rc<RefCell<LinkedNode<T>>>;
 type HeapWeakPointer<T> = Weak<RefCell<Heap<T>>>;
@@ -128,9 +130,19 @@ impl<T> Heap<T> {
         }
     }
 
+    #[test_ensures(
+        old(self.parent.is_some() && self.cell.priority < self.parent.as_ref().unwrap().upgrade().unwrap().borrow().cell.priority) ->
+        self.cell.priority > self.parent.as_ref().unwrap().upgrade().unwrap().borrow().cell.priority
+    )]
+    #[test_invariant(
+        self.parent.is_some() -> self.parent.as_ref().unwrap().upgrade().is_some()
+    )]
+    #[test_ensures(
+        self.parent.is_some() -> old(self.parent.is_some() && self.parent.as_ref().unwrap().upgrade().is_some()) 
+    )]
     fn heapify_up(& mut self){
         match &self.parent{
-            None => {}
+            None => {} 
             Some(reference)=>{
                 let pointer = match reference.upgrade(){
                     None => {todo!("return some error")}
@@ -146,7 +158,9 @@ impl<T> Heap<T> {
     }
     fn heapify_down(& mut self){
         match &self.left {
-            None=>{}
+            None=>{
+                // println!("cosa");
+            }
             Some(left_pointer_ref)=>{
                 let left_pointer = Rc::clone(left_pointer_ref);
                 match &self.right{
@@ -258,6 +272,7 @@ impl<T> HeapTree<T>{
                     }
                 };
                 pointer.add_next(&link_to_linkednode);
+                // println!("{:?}", Rc::weak_count(&link_to_linkednode));
                 self.end = Some(link_to_linkednode);
                 self.len+=1;
                 (*link_to_heap).borrow_mut().heapify_up();
