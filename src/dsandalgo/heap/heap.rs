@@ -1,12 +1,15 @@
-use std::{rc::{Rc, Weak}, cell::RefCell};
+use std::{rc::{Rc, Weak}, cell::RefCell, ptr::NonNull};
 use std::mem;
 
 use contracts::*;
+use rand::distributions::uniform::SampleBorrow;
 
 type HeapPointer<T> = Rc<RefCell<Heap<T>>>;
 type LinkedNodePointer<T> = Rc<RefCell<LinkedNode<T>>>;
 type HeapWeakPointer<T> = Weak<RefCell<Heap<T>>>;
 type LinkedNodeWeakPointer<T> = Weak<RefCell<LinkedNode<T>>>;
+type OptionalLinkedNodePointer<T> = Option<LinkedNodePointer<T>>;
+type OptionalHeapPointer<T> = Option<HeapPointer<T>>;
 
 trait Heapable<T> where Self: Sized {
     fn has_left_child(&self)->bool;
@@ -291,10 +294,25 @@ impl<T> HeapTree<T>{
         old(self.end.is_some()) -> self.end.is_some()
     )]
     // #[test_ensures(
-    //     old(self.end.is_some()) -> !Rc::ptr_eq(
-    //         old(&Rc::clone(self.end)),
-    //         self.end.as_ref().unwrap()
-    //     )
+    //     old(self.end.is_some()) -> {
+    //         if old(self.end.is_some()){
+    //             !Rc::ptr_eq(
+    //                 old(
+    //                     &match &self.end{
+    //                         None=> panic!(
+    //                             "aqui se debe devolver alguna especie de direccion de memoria por defecto"
+    //                         ),
+    //                         Some(pointer) =>{
+    //                             Rc::clone(pointer)
+    //                         }
+    //                     }
+    //                 ),
+    //                 self.end.as_ref().unwrap()
+    //             )
+    //         } else{
+    //             true
+    //         }
+    //     }
     // )]
     pub fn add(&mut self, value: T, priority: u32){
         let link_to_heap = Rc::new(
@@ -396,6 +414,39 @@ impl<T> HeapTree<T>{
     }
 }
 
-impl Clone for Option<Rc<RefCell<LinkedNode<T>>>> {
-    
+mod test_fn {
+    use super::*;
+    // NOTE - this need to be bfs
+    fn test_heap_structure_and_reachability<T>(heap: &HeapPointer<T>) -> i32{
+        let mut queue = Vec::new();
+        let mut counter = 0;
+        queue.push(Some(Rc::clone(heap)));
+
+        while let Some(Some(pointer)) = queue.pop() {
+            counter +=1;
+
+            match &(*pointer).borrow().left {
+                None=> queue.push(None),
+                Some(son)=>{
+                    queue.push(Some(Rc::clone(son)));
+                }
+            }
+            match &(*pointer).borrow().right {
+                None=> queue.push(None),
+                Some(son)=>{
+                    queue.push(Some(Rc::clone(son)));
+                }
+            }
+        }
+
+        if queue.into_iter().any(|f|{
+            if let Some(_) = f{
+                return true;
+            }
+            false
+        }){
+            return -1;
+        }
+        counter
+    }
 }
