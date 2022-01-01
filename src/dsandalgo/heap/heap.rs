@@ -449,4 +449,27 @@ mod test_fn {
         }
         counter
     }
+
+    fn test_heap_partial_ordering<T>(heap: &HeapPointer<T>) -> bool{
+        let pointer = Rc::clone(heap);
+        match &(*pointer).borrow().left {
+            None=>{}
+            Some(son)=>{
+                if son.borrow().cell.priority < pointer.borrow().cell.priority ||
+                 !test_heap_partial_ordering(son){
+                    return  false;
+                }
+            }
+        }
+        match &(*pointer).borrow().right {
+            None=>{}
+            Some(son)=>{
+                if son.borrow().cell.priority < pointer.borrow().cell.priority ||
+                 !test_heap_partial_ordering(son){
+                    return  false;
+                }
+            }
+        }
+        true
+    }
 }
