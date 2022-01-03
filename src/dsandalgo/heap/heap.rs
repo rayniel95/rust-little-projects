@@ -271,9 +271,12 @@ impl<T> HeapTree<T>{
         HeapTree { start: None, end: None, parentOfLast: None, len: 0 }
     }
 
-    #[test_invariant(
-        // TODO - here to test the heap structure and that all nodes are reachables
-    )]
+    // #[test_ensures(
+    //     self.start.is_some() -> test_fn::test_heap_structure_and_reachability(&self.start.as_ref().unwrap().borrow().value) as u32 == self.len
+    // )]
+    // #[test_ensures(
+    //     self.start.is_some() -> test_fn::test_heap_partial_ordering(&self.start.as_ref().unwrap().borrow().value)
+    // )]
     #[test_invariant(
         // TODO - here to test the linked list structure and that all nodes are 
         // reachables
@@ -347,7 +350,6 @@ impl<T> HeapTree<T>{
                     }
                 };
                 pointer.add_next(&link_to_linkednode);
-                // println!("{:?}", Rc::weak_count(&link_to_linkednode));
                 self.end = Some(link_to_linkednode);
                 self.len+=1;
                 (*link_to_heap).borrow_mut().heapify_up();
@@ -412,17 +414,39 @@ impl<T> HeapTree<T>{
             }
         }
     }
+    // TODO - a drop implementation is necessary
+}
+
+impl<T> Drop for HeapTree<T>{
+    fn drop(&mut self) {
+        match self.end.take() {
+            None=>{}
+            Some(_)=>{
+                self.parentOfLast.take();
+                let mut current = self.start.take();
+                
+                while let Some(pointer_ref) = &current {
+                    let mut pointer = Rc::clone(pointer_ref);
+                    (*pointer).borrow_mut().value.pop_left_son();
+                    (*pointer).borrow_mut().value.pop_right_son();
+                    current = pointer.pop_next();
+                }
+            }
+        }
+    }
 }
 
 mod test_fn {
     use super::*;
-    // NOTE - this need to be bfs
-    fn test_heap_structure_and_reachability<T>(heap: &HeapPointer<T>) -> i32{
+
+    pub(super) fn test_heap_structure_and_reachability<T>(heap: &HeapPointer<T>) -> i32{
         let mut queue = Vec::new();
         let mut counter = 0;
         queue.push(Some(Rc::clone(heap)));
 
-        while let Some(Some(pointer)) = queue.pop() {
+        while let Some(Some(pointer_ref)) = queue.first() {
+            let pointer = Rc::clone(pointer_ref);
+            queue.remove(0);
             counter +=1;
 
             match &(*pointer).borrow().left {
@@ -430,27 +454,22 @@ mod test_fn {
                 Some(son)=>{
                     queue.push(Some(Rc::clone(son)));
                 }
-            }
+            };
             match &(*pointer).borrow().right {
                 None=> queue.push(None),
                 Some(son)=>{
                     queue.push(Some(Rc::clone(son)));
                 }
-            }
+            };
         }
 
-        if queue.into_iter().any(|f|{
-            if let Some(_) = f{
-                return true;
-            }
-            false
-        }){
+        if queue.into_iter().any(|f| f.is_some()){
             return -1;
         }
         counter
     }
 
-    fn test_heap_partial_ordering<T>(heap: &HeapPointer<T>) -> bool{
+    pub(super) fn test_heap_partial_ordering<T>(heap: &HeapPointer<T>) -> bool{
         let pointer = Rc::clone(heap);
         match &(*pointer).borrow().left {
             None=>{}
