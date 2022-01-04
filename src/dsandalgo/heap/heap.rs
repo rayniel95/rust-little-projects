@@ -359,6 +359,9 @@ impl<T> HeapTree<T>{
             }
         }
     }
+    #[test_ensures(
+        self.len == old(self.len) - 1
+    )]
     pub fn pop(&mut self)->Option<T>{
         match self.end.take(){
             None => None,
