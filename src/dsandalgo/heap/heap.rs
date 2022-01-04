@@ -282,6 +282,9 @@ impl<T> HeapTree<T>{
         // reachables
     )]
     #[test_ensures(
+        // TODO - ensure parent of last is in the correct pointer
+    )]
+    #[test_ensures(
         self.len == old(self.len) + 1
     )]
     #[test_ensures(
@@ -360,7 +363,7 @@ impl<T> HeapTree<T>{
         match self.end.take(){
             None => None,
             Some(end_pointer)=>{
-                match self.parentOfLast.take() {
+                match &self.parentOfLast {
                     None=>{
                         self.start.take();
                         self.len-=1;
@@ -370,15 +373,15 @@ impl<T> HeapTree<T>{
                         ).ok().unwrap().into_inner().cell.value)
                     }
                     Some(parent)=>{
-                        let mut new_end_pointer = Weak::clone(
-                            end_pointer.borrow().prev.as_ref().unwrap()
-                        ).upgrade().unwrap();
+                        let mut new_end_pointer = 
+                            (*end_pointer).borrow_mut().prev.take().unwrap()
+                            .upgrade().unwrap();
                         new_end_pointer.pop_next().unwrap();
                         self.end = Some(new_end_pointer);
                         
-                        let end_heap_pointer = Rc::clone(
-                            &end_pointer.borrow().value
-                        );
+                        let end_heap_pointer = Rc::try_unwrap(
+                    end_pointer).ok().unwrap().into_inner().value;
+
                         let pointer_to_parent = parent.upgrade().unwrap();
                         if pointer_to_parent.borrow().value.is_left_child(&end_heap_pointer){
                             (*pointer_to_parent).borrow_mut().value.pop_left_son();
@@ -394,27 +397,25 @@ impl<T> HeapTree<T>{
                             (*pointer_to_parent).borrow_mut().value.pop_right_son();
                         }
                         self.len-=1;
-                        // TODO - this code need to be refactorized
-                        let start = self.start.take()
-                            .unwrap();
+
+                        let start = self.start.take().unwrap();
                         mem::swap(
                             &mut (*(*start).borrow_mut().value).borrow_mut().cell,
                             &mut (*end_heap_pointer).borrow_mut().cell
                         );
                         (*(*start).borrow_mut().value).borrow_mut().heapify_down();
-                        self.start = Some(Rc::clone(&start));
-                        drop(end_heap_pointer);
+                        self.start = Some(start);
+
                         Some(
-                            Rc::try_unwrap(Rc::try_unwrap(end_pointer)
-                            .ok().unwrap().into_inner().value)
-                            .ok().unwrap().into_inner().cell.value
+                            Rc::try_unwrap(
+                                end_heap_pointer).ok().unwrap().into_inner()
+                                .cell.value
                         )
                     }
                 }
             }
         }
     }
-    // TODO - a drop implementation is necessary
 }
 
 impl<T> Drop for HeapTree<T>{
