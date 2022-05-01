@@ -3,12 +3,12 @@ use std::rc::Rc;
 
 type SetLink<T> = Rc<RefCell<Set<T>>>;
 
-trait SetLinkeable<T> {
+trait DisjointSetable<T> {
     fn find_set(&mut self)->Self;
     fn merge(& mut self, other: &mut Self);
 }
 
-impl<T> SetLinkeable<T> for SetLink<T>{
+impl<T> DisjointSetable<T> for SetLink<T>{
     fn find_set(&mut self) ->Self {
         if let None = self.borrow().parent {
             return Rc::clone(self);
@@ -20,7 +20,7 @@ impl<T> SetLinkeable<T> for SetLink<T>{
     }
     fn merge(& mut self, other: &mut Self) {
         let left = self.find_set();
-        let right=other.find_set();
+        let right= other.find_set();
 
         if left.borrow().rank > right.borrow().rank{
             (*right).borrow_mut().parent = Some(left);
@@ -37,7 +37,7 @@ impl<T> SetLinkeable<T> for SetLink<T>{
 
 struct Set<T>{
     value: T,
-    parent: Option<Rc<RefCell<Set<T>>>>,
+    parent: Option<SetLink<T>>,
     rank: u32
 }
 
