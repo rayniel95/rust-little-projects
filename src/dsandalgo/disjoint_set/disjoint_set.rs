@@ -35,18 +35,38 @@ impl<T> DisjointSetable<T> for SetLink<T>{
     }
 }
 
-struct Set<T>{
+pub struct Set<T>{
     value: T,
     parent: Option<SetLink<T>>,
-    rank: u32
+    rank: u32,
+    index: u32,
 }
 
 impl<T> Set<T>{
-    pub fn new(value: T)-> Self{
+    fn new(value: T, index: u32)-> Self{
         Self{
             value: value,
             parent: None,
-            rank:0
+            rank:0,
+            index: index,
         }
+    }
+}
+
+pub struct DisjointSet<T>{
+    array: [SetLink<T>]
+}
+
+impl <T>  DisjointSet<T>{
+    pub fn new(size: u32)->Self{
+        Self{
+            array: [SetLink<T>; size]
+        }
+    }
+    pub fn find_set(index: u32)->u32{
+
+    }
+    pub fn merge(index1: u32, index2: u32){
+
     }
 }
