@@ -1,14 +1,14 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-type SetLink<T> = Rc<RefCell<Set<T>>>;
+type SetLink = Rc<RefCell<Set>>;
 
-trait DisjointSetable<T> {
+trait DisjointSetable {
     fn find_set(&mut self)->Self;
     fn merge(& mut self, other: &mut Self);
 }
 
-impl<T> DisjointSetable<T> for SetLink<T>{
+impl DisjointSetable for SetLink{
     fn find_set(&mut self) ->Self {
         if let None = self.borrow().parent {
             return Rc::clone(self);
@@ -35,17 +35,15 @@ impl<T> DisjointSetable<T> for SetLink<T>{
     }
 }
 
-pub struct Set<T>{
-    value: T,
-    parent: Option<SetLink<T>>,
+pub struct Set{
+    parent: Option<SetLink>,
     rank: u32,
     index: u32,
 }
 
-impl<T> Set<T>{
-    fn new(value: T, index: u32)-> Self{
+impl Set{
+    fn new(index: u32)-> Self{
         Self{
-            value: value,
             parent: None,
             rank:0,
             index: index,
@@ -53,14 +51,21 @@ impl<T> Set<T>{
     }
 }
 
-pub struct DisjointSet<T>{
-    array: [SetLink<T>]
+impl Default for Set {
+    fn default() -> Self {
+        Set::new(0)
+    }
 }
 
-impl <T>  DisjointSet<T>{
+pub struct DisjointSet{
+    array: [SetLink]
+}
+
+impl  DisjointSet{
     pub fn new(size: u32)->Self{
+
         Self{
-            array: [SetLink<T>; size]
+            array
         }
     }
     pub fn find_set(index: u32)->u32{
@@ -70,3 +75,5 @@ impl <T>  DisjointSet<T>{
 
     }
 }
+
+// TODO - implement Drop
