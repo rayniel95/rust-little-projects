@@ -58,20 +58,21 @@ impl Default for Set {
 }
 
 pub struct DisjointSet{
-    array: [SetLink]
+    array: Vec<SetLink>
 }
 
 impl  DisjointSet{
     pub fn new(size: u32)->Self{
-
-        Self{
-            array
+        Self{ 
+            array: (0..size).map(
+                |element| Rc::new(RefCell::new(Set::new(element)))
+            ).collect()
         }
     }
-    pub fn find_set(index: u32)->u32{
-
+    pub fn find_set(&self, index: u32)->u32{
+        
     }
-    pub fn merge(index1: u32, index2: u32){
+    pub fn merge(&self, index1: u32, index2: u32){
 
     }
 }
