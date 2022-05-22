@@ -27,15 +27,3 @@ pub fn solution(prices: Vec<f64>, notes: Vec<String>, x: f64) -> bool {
     // println!("{}", result);
     result <= x
 }
-
-
-// Expected Results as Binary String
-//   = "10111010011000100010"
-//   = 0xBA622 toBinaryString    (shorter by 1 char)
-
-// var i = -1
-
-// def solution(x: Any*) = {
-//   i += 1
-//   (0xBA622 toBinaryString)(i) > 48
-// }
