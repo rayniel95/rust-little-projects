@@ -69,11 +69,13 @@ impl  DisjointSet{
             ).collect()
         }
     }
-    pub fn find_set(&self, index: u32)->u32{
-        
+    pub fn find_set(& mut self, index: usize)->u32{
+        self.array[index].find_set().borrow().index
     }
-    pub fn merge(&self, index1: u32, index2: u32){
-
+    pub fn merge(&self, index1: usize, index2: usize){
+        let mut one = Rc::clone(&self.array[index1]);
+        let mut two = Rc::clone(&self.array[index2]);
+        one.merge(&mut two)
     }
 }
 
