@@ -79,4 +79,11 @@ impl  DisjointSet{
     }
 }
 
+impl Drop for DisjointSet {
+    fn drop(&mut self) {
+        for set in self.array.iter_mut(){
+            set.borrow_mut().parent = None;
+        }
+    }
+}
 // TODO - implement Drop
