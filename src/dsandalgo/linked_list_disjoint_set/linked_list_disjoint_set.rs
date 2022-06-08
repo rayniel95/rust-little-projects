@@ -5,14 +5,23 @@ type SetLink = Rc<RefCell<NodeSet>>;
 struct NodeSet{
     next: Option<SetLink>,
     head: Option<SetLink>,
-    length: Option<u32>
+    length: u32
 }
 
 // TODO - implement drop
 
+impl NodeSet {
+    fn new()->Self{
+        NodeSet{
+            next: None,
+            head: None,
+            length: 0
+        }
+    }
+}
+
 trait SetLinked {
     fn add(&mut self, other: &Self)->bool;
-    fn introduce(&mut self, other: &Self);
 }
 
 impl SetLinked for SetLink {
@@ -28,7 +37,18 @@ impl SetLinked for SetLink {
             }
         }
     }
-    fn introduce(&mut self, other: &Self) {
-        
+}
+
+struct DisjointSet{
+    array: Vec<SetLink>
+}
+
+impl DisjointSet {
+    fn new(lenght: usize)->Self{
+        return (0..lenght).map(
+            |index|{
+                Rc::new(Ref::new(NodeSet::))
+            }
+        )
     }
 }
