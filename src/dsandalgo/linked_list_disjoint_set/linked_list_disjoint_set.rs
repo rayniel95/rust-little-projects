@@ -1,15 +1,11 @@
 use std::{rc::Rc, cell::RefCell};
 
-type SetLink = Rc<RefCell<Set>>;
+type SetLink = Rc<RefCell<NodeSet>>;
 
-struct Set{
+struct NodeSet{
     next: Option<SetLink>,
-    head:Option<SetLink>
-}
-
-struct SetObject{
-    tail: SetLink,
-    length: u32
+    head: Option<SetLink>,
+    length: Option<u32>
 }
 
 // TODO - implement drop
@@ -21,9 +17,11 @@ trait SetLinked {
 
 impl SetLinked for SetLink {
     fn add(&mut self, other: &Self) ->bool {
-        // REVIEW - this can launch error on runtime
-        match &mut self.borrow_mut().next.take() {
-            Some(_)=> false,
+        match self.borrow_mut().next.take() {
+            Some(next)=> {
+                self.borrow_mut().next = Some(Rc::clone(&next));
+                false
+            },
             None=>{
                 self.borrow_mut().next = Some(Rc::clone(other));
                 true
