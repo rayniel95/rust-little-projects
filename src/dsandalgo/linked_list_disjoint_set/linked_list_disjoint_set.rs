@@ -9,8 +9,6 @@ struct NodeSet {
     index: usize,
 }
 
-// TODO - implement drop
-
 impl NodeSet {
     fn new(index: usize) -> Self {
         NodeSet {
@@ -18,25 +16,6 @@ impl NodeSet {
             head: None,
             length: 1,
             index,
-        }
-    }
-}
-
-trait SetLinked {
-    fn add(&mut self, other: &Self) -> bool;
-}
-
-impl SetLinked for SetLink {
-    fn add(&mut self, other: &Self) -> bool {
-        match self.borrow_mut().next.take() {
-            Some(next) => {
-                self.borrow_mut().next = Some(Rc::clone(&next));
-                false
-            }
-            None => {
-                self.borrow_mut().next = Some(Rc::clone(other));
-                true
-            }
         }
     }
 }
@@ -55,11 +34,10 @@ impl DisjointSet {
     }
 
     pub fn find_set(&self, index: usize) -> usize {
-        let head = self.array[index].borrow_mut().head.take();
+        let head = &self.array[index].borrow_mut().head;
         match head {
             None => index,
             Some(first) => {
-                self.array[index].borrow_mut().head = Some(Rc::clone(&first));
                 first.borrow().index
             }
         }
