@@ -1,4 +1,4 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, rc::Rc, mem};
 
 type SetLink = Rc<RefCell<NodeSet>>;
 
@@ -86,7 +86,6 @@ impl DisjointSet {
     fn insert(&self, one: usize, two: usize) {
         let last = self.array[one].borrow_mut().next.take();
         self.array[one].borrow_mut().next = Some(Rc::clone(&self.array[two]));
-        self.array[two].borrow_mut().length = 1;
 
         let mut pointer = Rc::clone(&self.array[two]);
         loop {
@@ -99,10 +98,9 @@ impl DisjointSet {
                     pointer.borrow_mut().next = last;
                     break;
                 }
-                Some(next_pointer) => {
-                    let temp = pointer;
-                    pointer = Rc::clone(&next_pointer);
-                    temp.borrow_mut().next = Some(Rc::clone(&pointer));
+                Some(mut next_pointer) => {
+                    pointer.borrow_mut().next = Some(Rc::clone(&next_pointer));
+                    mem::swap(&mut next_pointer, &mut pointer);
                 }
             }
         }
