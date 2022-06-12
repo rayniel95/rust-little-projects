@@ -55,7 +55,8 @@ impl DisjointSet {
     }
 
     pub fn find_set(&self, index: usize) -> usize {
-        match self.array[index].borrow_mut().head.take() {
+        let head = self.array[index].borrow_mut().head.take();
+        match head {
             None => index,
             Some(first) => {
                 self.array[index].borrow_mut().head = Some(Rc::clone(&first));
