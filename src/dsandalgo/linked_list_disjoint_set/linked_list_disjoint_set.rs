@@ -41,12 +41,12 @@ impl SetLinked for SetLink {
     }
 }
 
-struct DisjointSet {
+pub struct DisjointSet {
     array: Vec<SetLink>,
 }
 
 impl DisjointSet {
-    fn new(lenght: usize) -> Self {
+    pub fn new(lenght: usize) -> Self {
         DisjointSet {
             array: (0..lenght)
                 .map(|index| Rc::new(RefCell::new(NodeSet::new(index))))
@@ -54,7 +54,7 @@ impl DisjointSet {
         }
     }
 
-    fn find_set(&self, index: usize) -> usize {
+    pub fn find_set(&self, index: usize) -> usize {
         match self.array[index].borrow_mut().head.take() {
             None => index,
             Some(first) => {
@@ -63,7 +63,7 @@ impl DisjointSet {
             }
         }
     }
-    fn merge(&self, index1: usize, index2: usize) {
+    pub fn merge(&self, index1: usize, index2: usize) {
         let one = self.find_set(index1);
         let two = self.find_set(index2);
 
@@ -104,6 +104,15 @@ impl DisjointSet {
                     temp.borrow_mut().next = Some(Rc::clone(&pointer));
                 }
             }
+        }
+    }
+}
+
+impl Drop for DisjointSet {
+    fn drop(&mut self) {
+        for node in self.array.iter_mut(){
+            node.borrow_mut().head.take();
+            node.borrow_mut().next.take();
         }
     }
 }
