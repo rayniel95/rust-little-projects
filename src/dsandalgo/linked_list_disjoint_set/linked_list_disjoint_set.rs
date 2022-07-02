@@ -87,6 +87,29 @@ impl DisjointSet {
 
 impl Drop for DisjointSet {
     fn drop(&mut self) {
+        // for node in self.array.iter_mut(){
+        //     let head = node.borrow_mut().head.take();
+        //     match head {
+        //         None=>{
+        //             let mut pointer = Rc::clone(node);
+        //             loop {            
+        //                 let next = pointer.borrow_mut().next.take();
+        //                 print!("{} ", pointer.borrow().index);
+        //                 match next {
+        //                     None => {
+        //                         break;
+        //                     }
+        //                     Some(mut next_pointer) => {
+        //                         pointer.borrow_mut().next = Some(Rc::clone(&next_pointer));
+        //                         mem::swap(&mut next_pointer, &mut pointer);
+        //                     }
+        //                 }
+        //             }
+        //             println!();
+        //         }
+        //         Some(_)=>{}
+        //     }
+        // }
         for node in self.array.iter_mut(){
             node.borrow_mut().head.take();
             node.borrow_mut().next.take();
