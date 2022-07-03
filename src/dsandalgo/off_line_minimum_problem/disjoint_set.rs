@@ -4,35 +4,6 @@ use std::rc::{Rc, Weak};
 type StrongLink = Rc<RefCell<NodeSet>>;
 type WeakLink = Weak<RefCell<NodeSet>>;
 
-trait DisjointSetable {
-    fn find_set(&mut self) -> Self;
-    fn merge(&mut self, other: &mut Self);
-}
-
-impl DisjointSetable for StrongLink {
-    fn find_set(&mut self) -> Self {
-        if let None = self.borrow().parent {
-            return Rc::clone(self);
-        }
-        self.borrow_mut().parent = Some(self.borrow_mut().parent.as_mut().unwrap().find_set());
-        Rc::clone(self.borrow().parent.as_ref().unwrap())
-    }
-    fn merge(&mut self, other: &mut Self) {
-        let left = self.find_set();
-        let right = other.find_set();
-
-        if left.borrow().rank > right.borrow().rank {
-            (*right).borrow_mut().parent = Some(left);
-            return;
-        }
-
-        if left.borrow().rank == right.borrow().rank {
-            (*right).borrow_mut().rank += 1;
-        }
-        (*left).borrow_mut().parent = Some(right);
-    }
-}
-
 pub struct NodeSet {
     parent: Option<StrongLink>,
     rank: u32,
