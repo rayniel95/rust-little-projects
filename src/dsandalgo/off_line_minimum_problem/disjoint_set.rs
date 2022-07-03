@@ -45,36 +45,49 @@ impl DisjointSet {
         }
     }
 
-    pub fn find_set(&mut self, index: usize) -> usize {
-        if let None = self.array[index].borrow().parent {
+    // pub fn find_set(&mut self, index: usize) -> usize {
+    //     if let None = self.array[index].borrow().parent {
+    //         return index;
+    //     }
+    //     let parent_index = 
+    //         self.array[index].borrow().parent.unwrap().borrow().index;
+
+    //     self.array[index].borrow_mut().parent =
+    //         Some(Rc::clone(&self.array[self.find_set(parent_index)]));
+    //     self.array[index].borrow().parent.unwrap().borrow().index
+    // }
+    fn find_set(array: &mut Vec<StrongLink>, index: usize)->usize{
+        if let None = array[index].borrow().parent {
             return index;
         }
         let parent_index = 
-            self.array[index].borrow().parent.unwrap().borrow().index;
+            array[index].borrow().parent.unwrap().borrow().index;
 
-        self.array[index].borrow_mut().parent =
-            Some(Rc::clone(&self.array[self.find_set(parent_index)]));
-        self.array[index].borrow().parent.unwrap().borrow().index
+        array[index].borrow_mut().parent =
+            Some(Rc::clone(&array[DisjointSet::find_set(array, parent_index)]));
+        array[index].borrow().parent.unwrap().borrow().index
     }
+    fn merge(array: Vec<StrongLink>, one: usize, two: usize){
 
-    pub fn merge(&self, index1: usize, index2: usize) {
-        let left = self.find_set(index1);
-        let right = self.find_set(index2);
-
-        if self.array[left].borrow().rank > self.array[right].borrow().rank {
-            self.array[right].borrow_mut().parent = Some(
-                Rc::clone(&self.array[left])
-            );
-            return;
-        }
-
-        if self.array[left].borrow().rank == self.array[right].borrow().rank {
-            self.array[right].borrow_mut().rank += 1;
-        }
-        self.array[left].borrow_mut().parent = Some(
-            Rc::clone(&self.array[right])
-        );
     }
+    // pub fn merge(&self, index1: usize, index2: usize) {
+    //     let left = self.find_set(index1);
+    //     let right = self.find_set(index2);
+
+    //     if self.array[left].borrow().rank > self.array[right].borrow().rank {
+    //         self.array[right].borrow_mut().parent = Some(
+    //             Rc::clone(&self.array[left])
+    //         );
+    //         return;
+    //     }
+
+    //     if self.array[left].borrow().rank == self.array[right].borrow().rank {
+    //         self.array[right].borrow_mut().rank += 1;
+    //     }
+    //     self.array[left].borrow_mut().parent = Some(
+    //         Rc::clone(&self.array[right])
+    //     );
+    // }
 }
 
 impl Drop for DisjointSet {
