@@ -73,6 +73,7 @@ impl DisjointSet {
                 .collect(),
         }
     }
+
     pub fn find_set(&mut self, index: usize) -> usize {
         if let None = self.array[index].borrow().parent {
             return index;
@@ -84,14 +85,29 @@ impl DisjointSet {
             Some(Rc::clone(&self.array[self.find_set(parent_index)]));
         self.array[index].borrow().parent.unwrap().borrow().index
     }
+
     pub fn merge(&self, index1: usize, index2: usize) {
-        let mut one = Rc::clone(&self.array[index1]);
-        let mut two = Rc::clone(&self.array[index2]);
-        one.merge(&mut two)
+        let left = self.find_set(index1);
+        let right = self.find_set(index2);
+
+        if self.array[left].borrow().rank > self.array[right].borrow().rank {
+            self.array[right].borrow_mut().parent = Some(
+                Rc::clone(&self.array[left])
+            );
+            return;
+        }
+
+        if self.array[left].borrow().rank == self.array[right].borrow().rank {
+            self.array[right].borrow_mut().rank += 1;
+        }
+        self.array[left].borrow_mut().parent = Some(
+            Rc::clone(&self.array[right])
+        );
     }
 }
 
 impl Drop for DisjointSet {
+    // FIXME - finish this
     fn drop(&mut self) {
         for set in self.array.iter_mut() {
             set.borrow_mut().parent = None;
