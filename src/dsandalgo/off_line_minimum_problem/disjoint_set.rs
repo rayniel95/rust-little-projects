@@ -49,26 +49,78 @@ impl DisjointSet {
     //     if let None = self.array[index].borrow().parent {
     //         return index;
     //     }
-    //     let parent_index = 
+    //     let parent_index =
     //         self.array[index].borrow().parent.unwrap().borrow().index;
 
     //     self.array[index].borrow_mut().parent =
     //         Some(Rc::clone(&self.array[self.find_set(parent_index)]));
     //     self.array[index].borrow().parent.unwrap().borrow().index
     // }
-    fn find_set(array: &mut Vec<StrongLink>, index: usize)->usize{
+    fn find_set(array: &mut Vec<StrongLink>, index: usize) -> usize {
         if let None = array[index].borrow().parent {
             return index;
         }
-        let parent_index = 
-            array[index].borrow().parent.unwrap().borrow().index;
+        let parent_index = array[index].borrow().parent.unwrap().borrow().index;
 
-        array[index].borrow_mut().parent =
-            Some(Rc::clone(&array[DisjointSet::find_set(array, parent_index)]));
+        array[index].borrow_mut().parent = Some(Rc::clone(
+            &array[DisjointSet::find_set(array, parent_index)],
+        ));
         array[index].borrow().parent.unwrap().borrow().index
     }
-    fn merge(array: Vec<StrongLink>, one: usize, two: usize){
 
+    fn merge(array: &mut Vec<StrongLink>, one: usize, two: usize) {
+        let one_repr = DisjointSet::find_set(array, one);
+        let two_repr = DisjointSet::find_set(array, two);
+
+        if one_repr == two_repr {
+            return;
+        }
+
+        if array[one_repr].borrow().rank > array[two_repr].borrow().rank{
+            array[two_repr].borrow_mut().parent = Some(
+                Rc::clone(&array[one_repr])
+            );
+            array[one_repr].borrow_mut().set_number = 
+                array[two_repr].borrow().set_number;
+
+            array[two_repr].borrow_mut().previous.take();
+            let next = 
+                array[two_repr].borrow_mut().next.take();
+
+            array[one_repr].borrow_mut().next.take();
+            match next {
+                None=>{},
+                Some(pointer)=>{
+                    pointer.borrow_mut().previous = Some(
+                        Rc::downgrade(&array[one_repr])
+                    );
+                    array[one_repr].borrow_mut().next = Some(pointer);
+                }
+            }
+            return;
+        }
+        if array[one_repr].borrow().rank == array[two_repr].borrow().rank{
+            array[two_repr].borrow_mut().rank += 1;
+        }
+
+        array[one_repr].borrow_mut().parent = Some(
+            Rc::clone(&array[two_repr])
+        );
+        array[one_repr].borrow_mut().next.take();
+        array[two_repr].borrow_mut().previous.take();
+
+        let previous =
+            array[one_repr].borrow_mut().previous.take();
+        match previous{
+            None=>{},
+            Some(pointer)=>{
+                let pointer_up = pointer.upgrade().unwrap();
+                pointer_up.borrow_mut().next = Some(
+                    Rc::clone(&array[two_repr])
+                );
+                array[two_repr].borrow_mut().previous = Some(pointer);
+            }
+        }
     }
     // pub fn merge(&self, index1: usize, index2: usize) {
     //     let left = self.find_set(index1);
