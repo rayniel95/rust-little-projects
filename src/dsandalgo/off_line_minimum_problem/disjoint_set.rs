@@ -61,21 +61,21 @@ impl DisjointSet {
     //         Some(Rc::clone(&self.array[self.find_set(parent_index)]));
     //     self.array[index].borrow().parent.unwrap().borrow().index
     // }
-    fn find_set(array: &mut Vec<StrongLink>, index: usize) -> usize {
+    fn find_set_static(array: &mut Vec<StrongLink>, index: usize) -> usize {
         if let None = array[index].borrow().parent {
             return index;
         }
         let parent_index = array[index].borrow().parent.unwrap().borrow().index;
 
         (*array[index]).borrow_mut().parent = Some(Rc::clone(
-            &array[DisjointSet::find_set(array, parent_index)],
+            &array[DisjointSet::find_set_static(array, parent_index)],
         ));
         array[index].borrow().parent.unwrap().borrow().index
     }
 
     fn merge(array: &mut Vec<StrongLink>, one: usize, two: usize) {
-        let one_repr = DisjointSet::find_set(array, one);
-        let two_repr = DisjointSet::find_set(array, two);
+        let one_repr = DisjointSet::find_set_static(array, one);
+        let two_repr = DisjointSet::find_set_static(array, two);
 
         if one_repr == two_repr {
             return;
@@ -127,7 +127,9 @@ impl DisjointSet {
             }
         }
     }
-
+    pub fn find_set(&mut self, index: usize)->usize{
+        DisjointSet::find_set_static(&mut self.array, index)
+    }
     pub fn build_disjoint_set(sequence: &Sequence, n: usize)-> Self{
         let mut array = (0..n).map(
             |value| Rc::new(RefCell::new(NodeSet::new(value)))
@@ -164,10 +166,10 @@ impl DisjointSet {
             match (elem, prev) {
                 _=>{}
                 (&SequenceItem::I(elem_val), &SequenceItem::I(prev_val))=>{
-                    let repr_prev_val = DisjointSet::find_set(
+                    let repr_prev_val = DisjointSet::find_set_static(
                         &mut array, prev_val as usize
                     );
-                    let repr_elem_val = DisjointSet::find_set(
+                    let repr_elem_val = DisjointSet::find_set_static(
                         &mut array, elem_val as usize
                     );
                     if repr_elem_val != repr_prev_val{
