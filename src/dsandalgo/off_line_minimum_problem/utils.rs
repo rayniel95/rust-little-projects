@@ -1,7 +1,7 @@
 #[derive(Debug, Clone, Copy)]
-pub enum SecuenceItem{
+pub enum SequenceItem{
     E,
     I(u32)
 }
 
-pub type Sequence = Vec<SecuenceItem>;
+pub type Sequence = Vec<SequenceItem>;

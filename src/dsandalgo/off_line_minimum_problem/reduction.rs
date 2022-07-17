@@ -1,7 +1,7 @@
 use std::{mem::min_align_of_val, vec};
 
 use super::utils::{
-    Sequence, SecuenceItem
+    Sequence, SequenceItem
 };
 
 // NOTE - I am assuming positive numbers but I think, a generalization to 
@@ -14,39 +14,39 @@ pub fn reduce(secuence: Sequence)->Sequence{
     let maximun = match secuence.into_iter().filter(
         |item| {
             match item {
-                &SecuenceItem::E=>false,
-                &SecuenceItem::I(_)=>true
+                &SequenceItem::E=>false,
+                &SequenceItem::I(_)=>true
             }
         }
     ).max_by_key(
         |value| {
             match value {
-                &SecuenceItem::E=>0, // this will not exist on the list
-                &SecuenceItem::I(number)=>number
+                &SequenceItem::E=>0, // this will not exist on the list
+                &SequenceItem::I(number)=>number
             }
         }
     ).unwrap() {
-        SecuenceItem::E=>0,
-        SecuenceItem::I(value)=>value
+        SequenceItem::E=>0,
+        SequenceItem::I(value)=>value
     };
 
     let minimun = match secuence.into_iter().filter(
         |item| {
             match item {
-                &SecuenceItem::E=>false,
-                &SecuenceItem::I(_)=>true
+                &SequenceItem::E=>false,
+                &SequenceItem::I(_)=>true
             }
         }
     ).min_by_key(
         |value| {
             match value {
-                &SecuenceItem::E=>0, // this will not exist on the list
-                &SecuenceItem::I(number)=>number
+                &SequenceItem::E=>0, // this will not exist on the list
+                &SequenceItem::I(number)=>number
             }
         }
     ).unwrap(){
-        SecuenceItem::E=>0,
-        SecuenceItem::I(value)=>value
+        SequenceItem::E=>0,
+        SequenceItem::I(value)=>value
     };
 
     let repeated_times = vec![0; maximun.into() - minimun.into()];
@@ -54,10 +54,10 @@ pub fn reduce(secuence: Sequence)->Sequence{
     secuence.into_iter().for_each(
         |value| {
             match value{
-                SecuenceItem::I(number)=> repeated_times[
+                SequenceItem::I(number)=> repeated_times[
                         number.into() - minimun
                     ]+=1,
-                SecuenceItem::E=>{}
+                SequenceItem::E=>{}
             }
         }
     );
@@ -72,13 +72,13 @@ pub fn reduce(secuence: Sequence)->Sequence{
     secuence.into_iter().map(
         |value|{
             match value{
-                SecuenceItem::E=>SecuenceItem::E,
-                SecuenceItem::I(number)=>{
+                SequenceItem::E=>SequenceItem::E,
+                SequenceItem::I(number)=>{
                     let result = accumulative_sum[
                             number.into()-minimun
                         ]+counter[number.into()-minimun];
                     counter[number.into() - minimun]+=1;
-                    SecuenceItem::I(result)
+                    SequenceItem::I(result)
                 }
             }
         }
