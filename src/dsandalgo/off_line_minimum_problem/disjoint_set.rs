@@ -146,14 +146,43 @@ impl DisjointSet {
             sequence.len() - 1
         ).zip(sequence.iter().skip(1)){
             match (elem1, elem2){
-                (SequenceItem::I(val1), SequenceItem::I(val2))=>{
-                    DisjointSet::merge(array, val1, val2);
+                (&SequenceItem::I(val1), &SequenceItem::I(val2))=>{
+                    DisjointSet::merge(&mut array, val1 as usize, val2 as usize);
                 }
                 _=>{}
             }
         }
-
-
+        let prev = sequence.iter().find(
+            |value|{
+                match value {
+                    SequenceItem::E=>false,
+                    SequenceItem::I(_)=>true
+                }
+            }
+        ).unwrap();
+        for elem in sequence.iter(){
+            match (elem, prev) {
+                _=>{}
+                (&SequenceItem::I(elem_val), &SequenceItem::I(prev_val))=>{
+                    let repr_prev_val = DisjointSet::find_set(
+                        &mut array, prev_val as usize
+                    );
+                    let repr_elem_val = DisjointSet::find_set(
+                        &mut array, elem_val as usize
+                    );
+                    if repr_elem_val != repr_prev_val{
+                        (*array[repr_prev_val]).borrow_mut().next = Some(Rc::clone(
+                            &array[repr_elem_val]
+                        ));
+                        (*array[repr_elem_val]).borrow_mut().previous = Some(Rc::downgrade(
+                        &array[repr_prev_val]
+                        ));
+                        prev_val = elem_val;
+                    }
+                }
+            }
+        }
+        DisjointSet { array }
     }
     // pub fn merge(&self, index1: usize, index2: usize) {
     //     let left = self.find_set(index1);
