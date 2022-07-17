@@ -42,13 +42,6 @@ pub struct DisjointSet {
 }
 
 impl DisjointSet {
-    pub fn new(size: usize) -> Self {
-        Self {
-            array: (0..size)
-                .map(|element| Rc::new(RefCell::new(NodeSet::new(element))))
-                .collect(),
-        }
-    }
 
     // pub fn find_set(&mut self, index: usize) -> usize {
     //     if let None = self.array[index].borrow().parent {
@@ -207,10 +200,14 @@ impl DisjointSet {
 }
 
 impl Drop for DisjointSet {
-    // FIXME - finish this
     fn drop(&mut self) {
-        for set in self.array.iter_mut() {
-            set.borrow_mut().parent = None;
+        for set in self.array.into_iter() {
+            (*set).borrow_mut().parent.take();
+            (*set).borrow_mut().next.take();
+            (*set).borrow_mut().previous.take();
+            (*set).borrow_mut().rank=0;
+            (*set).borrow_mut().index=0;
+            (*set).borrow_mut().set_number=0;
         }
     }
 }
