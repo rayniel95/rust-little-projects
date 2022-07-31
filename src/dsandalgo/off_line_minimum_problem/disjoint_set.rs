@@ -121,13 +121,24 @@ impl DisjointSet {
         }
     }
     pub fn find_set_number(&self, index: usize)-> u32{
-        self.array[index].borrow().set_number
+        self.array[DisjointSet::find_set_static(&self.array, index)].borrow().set_number
     }
-    pub fn find_set(&mut self, index: usize)->usize{
-        DisjointSet::find_set_static(&mut self.array, index)
-    }
-    pub fn merge(&mut self, one: usize, two: usize) {
-        DisjointSet::merge_static(&mut self.array, one, two)
+    // pub fn find_set(&mut self, index: usize)->usize{
+    //     DisjointSet::find_set_static(&mut self.array, index)
+    // }
+    // pub fn merge(&mut self, one: usize, two: usize) {
+    //     DisjointSet::merge_static(&mut self.array, one, two)
+    // }
+    pub fn merge_sets(&mut self, index: usize){
+        let repr = DisjointSet::find_set_static(&mut self.array, index);
+
+        match &self.array[repr].borrow().next{
+            None=>{}
+            Some(pointer_ref)=>{
+                let next_index = pointer_ref.borrow().index;
+                DisjointSet::merge_static(&mut self.array, repr, next_index);
+            }
+        }
     }
     pub fn build_disjoint_set(sequence: &Sequence, n: usize)-> Self{
         let mut array = (0..n).map(
