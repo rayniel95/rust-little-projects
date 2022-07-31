@@ -66,7 +66,7 @@ impl DisjointSet {
         array[index].borrow().parent.as_ref().unwrap().borrow().index
     }
 
-    fn merge(array: &mut Vec<StrongLink>, one: usize, two: usize) {
+    fn merge_static(array: &mut Vec<StrongLink>, one: usize, two: usize) {
         let one_repr = DisjointSet::find_set_static(array, one);
         let two_repr = DisjointSet::find_set_static(array, two);
 
@@ -122,6 +122,9 @@ impl DisjointSet {
     }
     pub fn find_set(&mut self, index: usize)->usize{
         DisjointSet::find_set_static(&mut self.array, index)
+    }
+    pub fn merge(&mut self, one: usize, two: usize) {
+        DisjointSet::merge_static(&mut self.array, one, two)
     }
     pub fn build_disjoint_set(sequence: &Sequence, n: usize)-> Self{
         let mut array = (0..n).map(
