@@ -131,14 +131,13 @@ impl DisjointSet {
     // }
     pub fn merge_sets(&mut self, index: usize){
         let repr = DisjointSet::find_set_static(&mut self.array, index);
+        let pointer = match &self.array[repr].borrow().next{
+            None=>return,
+            Some(pointer_ref)=> Rc::clone(pointer_ref)
+        };
 
-        match &self.array[repr].borrow().next{
-            None=>{}
-            Some(pointer_ref)=>{
-                let next_index = pointer_ref.borrow().index;
-                DisjointSet::merge_static(&mut self.array, repr, next_index);
-            }
-        }
+        let next_index = pointer.borrow().index;
+        DisjointSet::merge_static(&mut self.array, repr, next_index);
     }
     pub fn build_disjoint_set(sequence: &Sequence, n: usize)-> Self{
         let mut array = (0..n).map(
