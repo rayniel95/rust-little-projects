@@ -120,6 +120,9 @@ impl DisjointSet {
             }
         }
     }
+    pub fn find_set_number(&self, index: usize)-> u32{
+        self.array[index].borrow().set_number
+    }
     pub fn find_set(&mut self, index: usize)->usize{
         DisjointSet::find_set_static(&mut self.array, index)
     }
@@ -145,7 +148,7 @@ impl DisjointSet {
         ).zip(sequence.iter().skip(1)){
             match (elem1, elem2){
                 (&SequenceItem::I(val1), &SequenceItem::I(val2))=>{
-                    DisjointSet::merge(&mut array, val1 as usize, val2 as usize);
+                    DisjointSet::merge_static(&mut array, val1 as usize, val2 as usize);
                 }
                 _=>{}
             }
