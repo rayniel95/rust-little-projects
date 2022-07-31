@@ -1,56 +1,34 @@
-// use super::linked_list_disjoint_set::DisjointSet;
+use super::off_line_minimum_problem::offline_minimum_problem;
+use super::utils::SequenceItem;
 
-// #[cfg(test)]
-// mod test {
-//     use std::{cmp::Ordering, convert::TryInto, vec};
+#[cfg(test)]
+mod test {
+    use rand::Rng;
 
-//     use rand::Rng;
+    use super::*;
 
-//     use super::*;
-
-//     #[test]
-//     fn fuzzy_test() {
-//         let nodes = 10000;
-//         let times_to_merge = 5000;
-
-//         let mut matrix = vec![vec![false; nodes]; nodes];
-
-//         for index in 0..nodes {
-//             matrix[index][index] = true;
-//         }
-//         let disjoint_set = DisjointSet::new(nodes);
-//         let mut generator = rand::thread_rng();
-//         println!("before merge");
-//         for _ in 0..times_to_merge {
-//             let one = generator.gen_range(0..nodes);
-//             let two = generator.gen_range(0..nodes);
-
-//             disjoint_set.merge(one, two);
-
-//             matrix[one][two] = true;
-//             matrix[two][one] = true;
-
-//             for elem in 0..nodes {
-//                 if matrix[elem][one] || matrix[elem][two] {
-//                     for other in 0..nodes {
-//                         matrix[elem][other] = matrix[one][other] ||
-//                             matrix[two][other]
-//                     }
-//                 }
-//             }
-//         }
-//         println!("to check");
-//         for _ in 0..times_to_merge {
-//             let one = generator.gen_range(0..nodes);
-//             let two = generator.gen_range(0..nodes);
-
-//             let one_repr = disjoint_set.find_set(one);
-//             let two_repr = disjoint_set.find_set(two);
-
-//             println!("one:{}-two:{}", one, two);
-//             println!("one repr:{}-two repr:{}", one_repr, two_repr);
-
-//             assert_eq!(matrix[one][two], one_repr == two_repr);
-//         }
-//     }
-// }
+    #[test]
+    fn simple_test() {
+        let sequence = vec![
+            SequenceItem::I(4),
+            SequenceItem::I(8),
+            SequenceItem::E, // 4
+            SequenceItem::I(3), 
+            SequenceItem::E, // 3
+            SequenceItem::I(9), 
+            SequenceItem::I(2), 
+            SequenceItem::I(6),
+            SequenceItem::E, // 2
+            SequenceItem::E, // 6
+            SequenceItem::E, // 9
+            SequenceItem::I(1), 
+            SequenceItem::I(7),
+            SequenceItem::E, // 1
+            SequenceItem::I(5)
+        ];
+        let result =  offline_minimum_problem(&sequence);
+        assert_eq!(
+            vec![4, 3, 2, 6, 9, 1], result
+        );
+    }
+}

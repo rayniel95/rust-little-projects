@@ -36,12 +36,12 @@ pub fn offline_minimum_problem(sequence: &Sequence)->Vec<u32>{
         &reduction, maximun as usize
     );
     let mut result = vec![0; set_count as usize];
-    for number in 1..maximun{
-        let number_size = number as usize;
+    for number in 1..=maximun{
+        let number_size = number as usize - 1;
         let set_number = disjoint_set.find_set_number(number_size);
 
         if set_number != set_count + 1{
-            result[set_number as usize] = number;
+            result[set_number as usize-1] = number;
             disjoint_set.merge_sets(number_size);
         }
     }

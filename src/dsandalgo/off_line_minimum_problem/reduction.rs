@@ -47,7 +47,7 @@ pub fn reduce(secuence: Sequence)->Sequence{
         &SequenceItem::I(value)=>value
     };
 
-    let mut repeated_times = vec![0; maximun as usize - minimun as usize];
+    let mut repeated_times = vec![0; maximun as usize - minimun as usize + 1];
 
     secuence.iter().for_each(
         |value| {

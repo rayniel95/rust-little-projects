@@ -139,6 +139,7 @@ impl DisjointSet {
         let next_index = pointer.borrow().index;
         DisjointSet::merge_static(&mut self.array, repr, next_index);
     }
+    // NOTE - assume that sequence contain domain D={1..n}
     pub fn build_disjoint_set(sequence: &Sequence, n: usize)-> Self{
         let mut array = (0..n).map(
             |value| Rc::new(RefCell::new(NodeSet::new(value)))
@@ -148,7 +149,7 @@ impl DisjointSet {
             match elem {
                 SequenceItem::E=>{set_number += 1;}
                 &SequenceItem::I(val)=>{
-                    (*array[val as usize]).borrow_mut().set_number=set_number;
+                    (*array[val as usize - 1]).borrow_mut().set_number=set_number;
                 }
             }
         }
@@ -158,7 +159,7 @@ impl DisjointSet {
         ).zip(sequence.iter().skip(1)){
             match (elem1, elem2){
                 (&SequenceItem::I(val1), &SequenceItem::I(val2))=>{
-                    DisjointSet::merge_static(&mut array, val1 as usize, val2 as usize);
+                    DisjointSet::merge_static(&mut array, val1 as usize - 1, val2 as usize - 1);
                 }
                 _=>{}
             }
@@ -175,10 +176,10 @@ impl DisjointSet {
             match (elem, prev) {
                 (&SequenceItem::I(elem_val), &SequenceItem::I(prev_val))=>{
                     let repr_prev_val = DisjointSet::find_set_static(
-                        &mut array, prev_val as usize
+                        &mut array, prev_val as usize - 1
                     );
                     let repr_elem_val = DisjointSet::find_set_static(
-                        &mut array, elem_val as usize
+                        &mut array, elem_val as usize -1
                     );
                     if repr_elem_val != repr_prev_val{
                         (*array[repr_prev_val]).borrow_mut().next = Some(Rc::clone(
