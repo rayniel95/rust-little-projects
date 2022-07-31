@@ -173,7 +173,6 @@ impl DisjointSet {
         ).unwrap();
         for elem in sequence.iter(){
             match (elem, prev) {
-                _=>{}
                 (&SequenceItem::I(elem_val), &SequenceItem::I(prev_val))=>{
                     let repr_prev_val = DisjointSet::find_set_static(
                         &mut array, prev_val as usize
@@ -191,6 +190,7 @@ impl DisjointSet {
                         prev = elem;
                     }
                 }
+                _=>{}
             }
         }
         DisjointSet { array }
