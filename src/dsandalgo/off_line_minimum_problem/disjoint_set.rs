@@ -54,16 +54,16 @@ impl DisjointSet {
     //         Some(Rc::clone(&self.array[self.find_set(parent_index)]));
     //     self.array[index].borrow().parent.unwrap().borrow().index
     // }
-    fn find_set_static(array: &mut Vec<StrongLink>, index: usize) -> usize {
+    fn find_set_static(array: & Vec<StrongLink>, index: usize) -> usize {
         if let None = array[index].borrow().parent {
             return index;
         }
-        let parent_index = array[index].borrow().parent.unwrap().borrow().index;
+        let parent_index = array[index].borrow().parent.as_ref().unwrap().borrow().index;
 
         (*array[index]).borrow_mut().parent = Some(Rc::clone(
             &array[DisjointSet::find_set_static(array, parent_index)],
         ));
-        array[index].borrow().parent.unwrap().borrow().index
+        array[index].borrow().parent.as_ref().unwrap().borrow().index
     }
 
     fn merge(array: &mut Vec<StrongLink>, one: usize, two: usize) {
@@ -132,7 +132,7 @@ impl DisjointSet {
             match elem {
                 SequenceItem::E=>{set_number += 1;}
                 &SequenceItem::I(val)=>{
-                    (*array[val as usize]).borrow_mut().parent;
+                    (*array[val as usize]).borrow_mut().set_number=set_number;
                 }
             }
         }
@@ -147,7 +147,7 @@ impl DisjointSet {
                 _=>{}
             }
         }
-        let prev = sequence.iter().find(
+        let mut prev = sequence.iter().find(
             |value|{
                 match value {
                     SequenceItem::E=>false,
@@ -172,7 +172,7 @@ impl DisjointSet {
                         (*array[repr_elem_val]).borrow_mut().previous = Some(Rc::downgrade(
                         &array[repr_prev_val]
                         ));
-                        prev_val = elem_val;
+                        prev = elem;
                     }
                 }
             }
@@ -201,13 +201,13 @@ impl DisjointSet {
 
 impl Drop for DisjointSet {
     fn drop(&mut self) {
-        for set in self.array.into_iter() {
-            (*set).borrow_mut().parent.take();
-            (*set).borrow_mut().next.take();
-            (*set).borrow_mut().previous.take();
-            (*set).borrow_mut().rank=0;
-            (*set).borrow_mut().index=0;
-            (*set).borrow_mut().set_number=0;
+        for set in self.array.iter_mut() {
+            set.as_ref().borrow_mut().parent=None;
+            set.as_ref().borrow_mut().next.take();
+            set.as_ref().borrow_mut().previous.take();
+            set.as_ref().borrow_mut().rank=0;
+            set.as_ref().borrow_mut().index=0;
+            set.as_ref().borrow_mut().set_number=0;
         }
     }
 }
